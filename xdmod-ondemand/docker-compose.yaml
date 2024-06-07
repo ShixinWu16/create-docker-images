@@ -1,0 +1,13 @@
+services:
+  xdmod-ondemand:
+    image: ${XDMOD_ONDEMAND_IMAGE}
+    build:
+      dockerfile: rocky8-xdmod-ondemand.dockerfile
+      args:
+        - BASE_IMAGE_PLATFORM
+        - XDMOD_IMAGE
+        - XDMOD_ONDEMAND_GITHUB_TAG
+        - XDMOD_ONDEMAND_RPM
+        - XDMOD_GITHUB_TAG
+        - XDMOD_GITHUB_USER
+        - XDMOD_ONDEMAND_GITHUB_USER

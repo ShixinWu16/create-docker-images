@@ -1,0 +1,12 @@
+services:
+  xdmod-job-performance:
+    image: ${XDMOD_JOB_PERFORMANCE_IMAGE}
+    build:
+      dockerfile: rocky8-xdmod-job-performance.dockerfile
+      args:
+        - BASE_IMAGE_PLATFORM
+        - XDMOD_IMAGE
+        - BASE_IMAGE_ARCHITECTURE
+        - XDMOD_SUPREMM_GITHUB_TAG
+        - XDMOD_SUPREMM_RPM
+        - XDMOD_SUPREMM_GITHUB_USER
