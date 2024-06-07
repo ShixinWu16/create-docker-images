@@ -1,0 +1,34 @@
+services:
+  xdmod:
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    hostname: xdmod
+    container_name: xdmod
+    image: ${XDMOD_IMAGE}
+    # command: tail -f /dev/null
+    environment:
+      - COMPOSER_ALLOW_SUPERUSER=1
+    ports:
+      - '443:443'
+    volumes:
+      - ./bin:/root/bin
+      - ./xdmod/tests/ci/bootstrap.sh:/root/xdmod/tests/ci/bootstrap.sh
+  mariadb:
+    image: mariadb
+    hostname: mariadb
+    container_name: mariadb
+    volumes:
+      - ./50-server.cnf:/etc/mysql/mariadb.conf.d/50-server.cnf
+    restart: always
+    environment:
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 1
+    expose:
+      - 3306
+    healthcheck:
+      test: [ "CMD", "/usr/local/bin/healthcheck.sh", "--su-mysql", "--connect",  "--innodb_initialized" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+

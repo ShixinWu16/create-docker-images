@@ -3,8 +3,8 @@
 OS_VERSION=$(cat /etc/os-release | grep "VERSION_ID" | cut -d'=' -f 2 | tr -d '"')
 
 function start_services() {
-    /usr/bin/mysqld_safe --basedir=/usr &
-    /usr/libexec/mariadb-wait-ready $!
+    #/usr/bin/mysqld_safe --basedir=/usr &
+    #/usr/libexec/mariadb-wait-ready $!
     httpd -k start
     /usr/sbin/postfix start
 
@@ -17,7 +17,7 @@ function start_services() {
 
 function stop_services() {
     httpd -k stop
-    mysqladmin shutdown
+    #mysqladmin shutdown
     /usr/sbin/postfix stop
 
     case "$OS_VERSION" in
@@ -41,13 +41,6 @@ case "$1" in
     nodaemon)
         $0 start
         while sleep 1; do
-
-            mysqladmin status >/dev/null 2>&1
-            shouldDie=0
-            if [ $? -ne 0 ]; then
-                echo "mySQL not running"
-                shouldDie=1
-            fi
 
             /usr/sbin/postfix status >/dev/null 2>&1
             if [ $? -ne 0 ]; then

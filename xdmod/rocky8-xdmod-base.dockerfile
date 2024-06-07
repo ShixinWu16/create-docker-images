@@ -54,7 +54,7 @@ RUN dnf -y install \
     openssl-devel
 
 # Install Specific MariaDB RPMS ( 10.3.35 )
-RUN dnf install -y /tmp/assets/mariadb-rpms/*.rpm
+# RUN dnf install -y /tmp/assets/mariadb-rpms/*.rpm
 
 # Install the mongodb pecl extension
 RUN yes '' | pecl install mongodb-1.16.2
@@ -94,3 +94,4 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" &&
 RUN dnf clean all && rm -rf /var/cache/dnf
 
 WORKDIR /root
+
