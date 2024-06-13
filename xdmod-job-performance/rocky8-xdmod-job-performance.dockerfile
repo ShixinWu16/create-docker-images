@@ -16,7 +16,13 @@ COPY assets/mongodb-org-${BASE_IMAGE_ARCHITECTURE}.repo /etc/yum.repos.d
 
 RUN dnf install -y mongodb-org
 
-RUN dnf install -y https://github.com/ubccr/xdmod-supremm/releases/download/${XDMOD_SUPREMM_GITHUB_TAG}/${XDMOD_SUPREMM_RPM}
+# RUN dnf install -y https://github.com/ubccr/xdmod-supremm/releases/download/${XDMOD_SUPREMM_GITHUB_TAG}/${XDMOD_SUPREMM_RPM}
+
+#RUN ln -s /xdmod-supremm /
+
+RUN ~/bin/buildrpm xdmod supremm
+RUN dnf install -y ~/rpmbuild/RPMS/noarch/xdmod-11.0.0-1.0.el8.noarch.rpm
+# RUN dnf install -y ~/rpmbuild/RPMS/noarch/xdmod-supremm*.rpm
 
 RUN dnf clean all
 RUN rm -rf /var/cache/dnf
@@ -31,22 +37,34 @@ RUN sed -i 's/^#nojournal = true/nojournal = true/; s/^#noprealloc = true/noprea
 
 ## Start services, setup database and ingest SUPReMM data.
 ## note that we make sure to clean shutdown the database so the data are flushed properly
-RUN ~/bin/services start && \
-    mongod -f /etc/mongod.conf --fork && \
-    ~/bin/importmongo.sh && \
-    wget -nv https://raw.githubusercontent.com/${XDMOD_SUPREMM_GITHUB_USER}/xdmod-supremm/${XDMOD_SUPREMM_GITHUB_TAG}/tests/integration_tests/scripts/mongo_auth.mongojs && \
-    mongo mongo_auth.mongojs && \
-    rm -rf mongo_auth.mongojs && \
-    mongod -f /etc/mongod.conf --shutdown && \
-    mongod --fork -f /etc/mongod.conf --auth && \
-    wget -nv https://raw.githubusercontent.com/${XDMOD_SUPREMM_GITHUB_USER}/xdmod-supremm/${XDMOD_SUPREMM_GITHUB_TAG}/tests/integration_tests/scripts/xdmod-setup.tcl && \
-    expect xdmod-setup.tcl | col -b && \
-    rm -rf xdmod-setup.tcl && \
-    aggregate_supremm.sh && \
-    acl-config && \
-    mongod -f /etc/mongod.conf --shutdown && \
-    ~/bin/services stop
+
+# RUN git clone -b xdmod11.0 https://github.com/ubccr/xdmod.git
+RUN git clone -b xdmod11.0 https://github.com/ubccr/xdmod-supremm.git
+
+RUN ln -s xdmod-supremm/ xdmod/open_xdmod/modules/supremm
+
+WORKDIR /root/xdmod
+
+RUN ~/bin/buildrpm xdmod supremm
+#RUN dnf install -y ~/rpmbuild/RPMS/noarch/xdmod-supremm*.rpm
+
+#RUN ~/bin/services start && \
+#    mongod -f /etc/mongod.conf --fork && \
+#    ~/bin/importmongo.sh && \
+#    wget -nv https://raw.githubusercontent.com/${XDMOD_SUPREMM_GITHUB_USER}/xdmod-supremm/${XDMOD_SUPREMM_GITHUB_TAG}/tests/integration_tests/scripts/mongo_auth.mongojs && \
+#    mongo mongo_auth.mongojs && \
+#    rm -rf mongo_auth.mongojs && \
+#    mongod -f /etc/mongod.conf --shutdown && \
+#    mongod --fork -f /etc/mongod.conf --auth && \
+#    wget -nv https://raw.githubusercontent.com/${XDMOD_SUPREMM_GITHUB_USER}/xdmod-supremm/${XDMOD_SUPREMM_GITHUB_TAG}/tests/integration_tests/scripts/xdmod-setup.tcl && \
+#   expect xdmod-setup.tcl | col -b && \
+#   rm -rf xdmod-setup.tcl && \
+#    aggregate_supremm.sh && \
+#    acl-config && \
+#    mongod -f /etc/mongod.conf --shutdown && \
+#    ~/bin/services stop \
 
 # ~/bin/services-mongo also manages mongod, so mv it into place now.
-RUN \mv ~/bin/services-mongo ~/bin/services
-
+#RUN chmod +x /root/xdmod/tests/ci/bootstrap.sh
+#CMD  /root/xdmod/tests/ci/bootstrap.sh ;
+CMD tail -f /dev/null

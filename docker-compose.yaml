@@ -1,0 +1,86 @@
+services:
+    xdmod-base-php8:
+        image: ${XDMOD_BASE_PHP8_IMAGE}
+        build:
+            context: xdmod
+            dockerfile: rocky8-xdmod-base-php8.dockerfile
+            args:
+                - BASE_IMAGE_PLATFORM
+                - BASE_IMAGE
+    xdmod-base:
+        image: ${XDMOD_BASE_IMAGE}
+        build:
+            context: xdmod
+            dockerfile: rocky8-xdmod-base.dockerfile
+            args:
+                - BASE_IMAGE_PLATFORM
+                - BASE_IMAGE
+    xdmod-php8:
+        image: ${XDMOD_PHP8_IMAGE}
+        environment:
+            - COMPOSER_ALLOW_SUPERUSER=1
+        build:
+            context: xdmod
+            dockerfile: rocky8-xdmod.dockerfile
+            args:
+                - BASE_IMAGE_PLATFORM
+                - XDMOD_BASE_IMAGE
+                - COMPOSER
+                - COMPOSER_ALLOW_SUPERUSER
+                - XDMOD_GITHUB_TAG
+                - XDMOD_GITHUB_USER
+    xdmod:
+        image: ${XDMOD_IMAGE}
+        environment:
+            - COMPOSER_ALLOW_SUPERUSER=1
+# If you are developing / building these images on an internet connection with less than desirable speeds, consider modifying / uncommenting
+# the lines below to set up dnf caching for system dependencies ( you'll also need a dnf.conf file that enables caching ). This will ensure that
+# you only have to download the system level dependencies once as opposed to every time.
+#        volumes:
+#            - /Users/ryanrath/scratch/cache/rocky8/xdmod/dnf:/var/cache/dnf
+#            - /Users/ryanrath/scratch/cache/rocky8/xdmod/dnf.conf:/etc/dnf/dnf.conf
+        build:
+            context: xdmod
+            dockerfile: rocky8-xdmod.dockerfile
+            args:
+                - BASE_IMAGE_PLATFORM
+                - XDMOD_BASE_IMAGE
+                - COMPOSER
+                - COMPOSER_ALLOW_SUPERUSER
+                - XDMOD_GITHUB_TAG
+                - XDMOD_GITHUB_USER
+    xdmod-job-performance:
+        image: ${XDMOD_JOB_PERFORMANCE_IMAGE}
+        build:
+            context: xdmod-job-performance
+            dockerfile: rocky8-xdmod-job-performance.dockerfile
+            args:
+                - BASE_IMAGE_PLATFORM
+                - XDMOD_IMAGE
+                - BASE_IMAGE_ARCHITECTURE
+                - XDMOD_SUPREMM_GITHUB_TAG
+                - XDMOD_SUPREMM_RPM
+                - XDMOD_SUPREMM_GITHUB_USER
+    xdmod-ondemand:
+        image: ${XDMOD_ONDEMAND_IMAGE}
+        build:
+            context: xdmod-ondemand
+            dockerfile: rocky8-xdmod-ondemand.dockerfile
+            args:
+                - BASE_IMAGE_PLATFORM
+                - XDMOD_IMAGE
+                - XDMOD_ONDEMAND_GITHUB_TAG
+                - XDMOD_ONDEMAND_RPM
+                - XDMOD_GITHUB_TAG
+                - XDMOD_GITHUB_USER
+                - XDMOD_ONDEMAND_GITHUB_USER
+    mariadb:
+        image: mariadb
+        build:
+            dockerfile: mariadb.dockerfile
+        container_name: mariadb
+        expose:
+            - 3306
+        restart: always
+        volumes:
+            - ./50-server.cnf:/etc/mysql/mariadb.conf.d/50-server.cnf

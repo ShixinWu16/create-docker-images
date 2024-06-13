@@ -1,12 +1,40 @@
+version: '3'
 services:
+  xdmod-job-performance-mongodb:
+    image: mongo:5.0
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    #environment:
+    #  MONGO_INITDB_ROOT_USERNAME: root
+    #  MONGO_INITDB_ROOT_PASSWORD: example
+    healthcheck:
+      test: [ "CMD", "mongo", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - mongo-data:/data/db
+
+  xdmod-job-performance-mariadb:
+    hostname: mariadb
+    container_name: mariadb
+    image: mariadb:latest
+    healthcheck:
+      test: [ "CMD", "/usr/local/bin/healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   xdmod-job-performance:
     image: ${XDMOD_JOB_PERFORMANCE_IMAGE}
-    build:
-      dockerfile: rocky8-xdmod-job-performance.dockerfile
-      args:
-        - BASE_IMAGE_PLATFORM
-        - XDMOD_IMAGE
-        - BASE_IMAGE_ARCHITECTURE
-        - XDMOD_SUPREMM_GITHUB_TAG
-        - XDMOD_SUPREMM_RPM
-        - XDMOD_SUPREMM_GITHUB_USER
+    container_name: xdmod-job-performance
+    hostname: xdmod-job-performance
+    depends_on:
+      xdmod-job-performance-mongodb:
+        condition: service_healthy
+      xdmod-job-performance-mariadb:
+        condition: service_healthy
+
+volumes:
+  mongo-data:
