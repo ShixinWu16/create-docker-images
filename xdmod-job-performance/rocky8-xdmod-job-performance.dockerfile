@@ -45,7 +45,7 @@ RUN ln -s xdmod-supremm/ xdmod/open_xdmod/modules/supremm
 
 WORKDIR /root/xdmod
 
-RUN ~/bin/buildrpm xdmod supremm
+RUN /root/bin/buildrpm xdmod supremm
 #RUN dnf install -y ~/rpmbuild/RPMS/noarch/xdmod-supremm*.rpm
 
 #RUN ~/bin/services start && \
@@ -64,7 +64,12 @@ RUN ~/bin/buildrpm xdmod supremm
 #    mongod -f /etc/mongod.conf --shutdown && \
 #    ~/bin/services stop \
 
+WORKDIR /root
+
+RUN dnf install -y ~/rpmbuild/RPMS/noarch/xdmod*.rpm
+
+RUN chmod +x /root/xdmod/tests/scripts/bootstrap.sh
 # ~/bin/services-mongo also manages mongod, so mv it into place now.
-#RUN chmod +x /root/xdmod/tests/ci/bootstrap.sh
-#CMD  /root/xdmod/tests/ci/bootstrap.sh ;
+RUN chmod +x /root/xdmod/tests/ci/bootstrap.sh
+CMD  /root/xdmod/tests/ci/bootstrap.sh ;
 CMD tail -f /dev/null

@@ -1,7 +1,7 @@
 services:
   xdmod:
     depends_on:
-      xdmod-mariadb:
+      mariadb:
         condition: service_healthy
     hostname: xdmod
     container_name: xdmod
@@ -15,14 +15,22 @@ services:
       - ./xdmod/tests/ci/bootstrap.sh:/root/xdmod/tests/ci/bootstrap.sh
       - ./xdmod:/root/xdmod
     mem_reservation: 2G
-  xdmod-mariadb:
+    networks:
+      xdmod_default: {}
+
+  mariadb:
     hostname: mariadb
     container_name: mariadb
-    image: mariadb:latest
+    image: ${MARIADB_IMAGE}
     healthcheck:
       test: [ "CMD", "/usr/local/bin/healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized" ]
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      xdmod_default: {}
 
+networks:
+  xdmod_default:
+    name: xdmod_default
 

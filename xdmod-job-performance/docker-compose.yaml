@@ -1,6 +1,5 @@
-version: '3'
 services:
-  xdmod-job-performance-mongodb:
+  mongodb:
     image: mongo:5.0
     container_name: mongodb
     ports:
@@ -15,26 +14,37 @@ services:
       retries: 5
     volumes:
       - mongo-data:/data/db
+    networks:
+      xdmod_default: {}
 
-  xdmod-job-performance-mariadb:
+  mariadb:
     hostname: mariadb
     container_name: mariadb
-    image: mariadb:latest
+    image: ${MARIADB_IMAGE}
     healthcheck:
       test: [ "CMD", "/usr/local/bin/healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized" ]
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      xdmod_default: {}
 
   xdmod-job-performance:
     image: ${XDMOD_JOB_PERFORMANCE_IMAGE}
     container_name: xdmod-job-performance
     hostname: xdmod-job-performance
     depends_on:
-      xdmod-job-performance-mongodb:
+      mongodb:
         condition: service_healthy
-      xdmod-job-performance-mariadb:
+      mariadb:
         condition: service_healthy
+    networks:
+      xdmod_default: {}
+
+networks:
+  xdmod_default:
+    name: xdmod_default
+
 
 volumes:
   mongo-data:

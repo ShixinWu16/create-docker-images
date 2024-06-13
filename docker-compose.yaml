@@ -75,7 +75,7 @@ services:
                 - XDMOD_GITHUB_USER
                 - XDMOD_ONDEMAND_GITHUB_USER
     mariadb:
-        image: mariadb
+        image: ${MARIADB_IMAGE}
         build:
             dockerfile: mariadb.dockerfile
         container_name: mariadb
