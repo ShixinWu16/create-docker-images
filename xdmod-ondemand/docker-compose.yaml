@@ -14,7 +14,7 @@ services:
   mariadb:
     hostname: mariadb
     container_name: mariadb
-    image: ${MARIADB_IMAGE}
+    image: tools-int-01.ccr.xdmod.org/mariadb:x86_64-rockylinux8.5-01-general
     healthcheck:
       test: [ "CMD", "/usr/local/bin/healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized" ]
       interval: 10s
