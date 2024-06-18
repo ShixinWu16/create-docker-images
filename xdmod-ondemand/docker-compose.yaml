@@ -7,14 +7,14 @@ services:
     container_name: xdmod
     hostname: xdmod
     ports:
-      - '3443:3443'
+      - '443:443'
     networks:
       xdmod_default: {}
 
   mariadb:
     hostname: mariadb
     container_name: mariadb
-    image: tools-int-01.ccr.xdmod.org/mariadb:x86_64-rockylinux8.5-01-general
+    image: tools-int-01.ccr.xdmod.org/mariadb:x86_64-rockylinux8.5-01-general2
     volumes:
       - ./50-server.cnf:/etc/mysql/mariadb.conf.d/50-server.cnf
     healthcheck:

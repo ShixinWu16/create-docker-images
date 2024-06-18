@@ -10,7 +10,7 @@ do
         collection=`basename $collectionpath`
         for doc in $collectionpath/*.json
         do
-            tr -d '\n' < $doc | mongoimport --db $dbname --collection $collection
+            tr -d '\n' < $doc | mongoimport --db $dbname --collection $collection --uri "mongodb://xdmod:uvVA6bIC9DMts30ZiLRaH@mongodb:27017/supremm?authSource=admin" --authenticationDatabase admin
         done
     done
 done

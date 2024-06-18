@@ -1,6 +1,6 @@
 ARG BASE_IMAGE_PLATFORM
 ARG XDMOD_IMAGE
-FROM --platform=${BASE_IMAGE_PLATFORM} ${XDMOD_IMAGE}
+FROM --platform=${BASE_IMAGE_PLATFORM} tools-int-01.ccr.xdmod.org/xdmod:x86_64-rockylinux8.5-v11.0-1.0-01-general2
 
 LABEL description="The XDMoD Job Performance image used in our CI builds or local testing."
 
@@ -46,30 +46,28 @@ RUN ln -s xdmod-supremm/ xdmod/open_xdmod/modules/supremm
 WORKDIR /root/xdmod
 
 RUN /root/bin/buildrpm xdmod supremm
-#RUN dnf install -y ~/rpmbuild/RPMS/noarch/xdmod-supremm*.rpm
+RUN dnf install -y ~/rpmbuild/RPMS/noarch/xdmod*.rpm
 
-#RUN ~/bin/services start && \
-#    mongod -f /etc/mongod.conf --fork && \
-#    ~/bin/importmongo.sh && \
-#    wget -nv https://raw.githubusercontent.com/${XDMOD_SUPREMM_GITHUB_USER}/xdmod-supremm/${XDMOD_SUPREMM_GITHUB_TAG}/tests/integration_tests/scripts/mongo_auth.mongojs && \
-#    mongo mongo_auth.mongojs && \
-#    rm -rf mongo_auth.mongojs && \
-#    mongod -f /etc/mongod.conf --shutdown && \
-#    mongod --fork -f /etc/mongod.conf --auth && \
-#    wget -nv https://raw.githubusercontent.com/${XDMOD_SUPREMM_GITHUB_USER}/xdmod-supremm/${XDMOD_SUPREMM_GITHUB_TAG}/tests/integration_tests/scripts/xdmod-setup.tcl && \
-#   expect xdmod-setup.tcl | col -b && \
-#   rm -rf xdmod-setup.tcl && \
-#    aggregate_supremm.sh && \
-#    acl-config && \
-#    mongod -f /etc/mongod.conf --shutdown && \
-#    ~/bin/services stop \
+RUN chmod +x ~/bin/importmongo.sh
+
+CMD ~/bin/services start && \
+    # mongod -f /etc/mongod.conf --fork && \
+    ~/bin/importmongo.sh && \
+    wget -nv https://raw.githubusercontent.com/${XDMOD_SUPREMM_GITHUB_USER}/xdmod-supremm/${XDMOD_SUPREMM_GITHUB_TAG}/tests/integration_tests/scripts/mongo_auth.mongojs && \
+    mongo mongo_auth.mongojs && \
+    rm -rf mongo_auth.mongojs && \
+    # mongod -f /etc/mongod.conf --shutdown && \
+    # mongod --fork -f /etc/mongod.conf --auth && \
+    wget -nv https://raw.githubusercontent.com/${XDMOD_SUPREMM_GITHUB_USER}/xdmod-supremm/${XDMOD_SUPREMM_GITHUB_TAG}/tests/integration_tests/scripts/xdmod-setup.tcl && \
+    expect xdmod-setup.tcl | col -b && \
+    rm -rf xdmod-setup.tcl && \
+    aggregate_supremm.sh && \
+    acl-config \
+    # mongod -f /etc/mongod.conf --shutdown && \
+    ; tail -f /dev/null
 
 WORKDIR /root
 
-RUN dnf install -y ~/rpmbuild/RPMS/noarch/xdmod*.rpm
 
-RUN chmod +x /root/xdmod/tests/scripts/bootstrap.sh
 # ~/bin/services-mongo also manages mongod, so mv it into place now.
-RUN chmod +x /root/xdmod/tests/ci/bootstrap.sh
-CMD  /root/xdmod/tests/ci/bootstrap.sh ;
-CMD tail -f /dev/null
+# CMD tail -f /dev/null

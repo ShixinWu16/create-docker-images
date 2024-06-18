@@ -2,25 +2,27 @@ services:
   mongodb:
     image: mongo:5.0
     container_name: mongodb
+    hostname: mongodb
     ports:
       - "27017:27017"
-    #environment:
-    #  MONGO_INITDB_ROOT_USERNAME: root
-    #  MONGO_INITDB_ROOT_PASSWORD: example
+    command: [--auth]
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: xdmod
+      MONGO_INITDB_ROOT_PASSWORD: uvVA6bIC9DMts30ZiLRaH
     healthcheck:
       test: [ "CMD", "mongo", "--eval", "db.adminCommand('ping')" ]
       interval: 10s
       timeout: 5s
       retries: 5
-    volumes:
-      - mongo-data:/data/db
+    #volumes:
+    #  - ./bin/mongodbaccountcreation.js:/docker-entrypoint-initdb.d/init-mongo-js:ro
     networks:
       xdmod_default: {}
 
   mariadb:
     hostname: mariadb
     container_name: mariadb
-    image: ${MARIADB_IMAGE}
+    image: tools-int-01.ccr.xdmod.org/mariadb:x86_64-rockylinux8.5-01-general2
     healthcheck:
       test: [ "CMD", "/usr/local/bin/healthcheck.sh", "--connect", "--innodb_initialized",  "--datadir", "/var/lib/db" ]
       interval: 10s
