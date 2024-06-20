@@ -43,8 +43,8 @@ WORKDIR /root/xdmod
 RUN composer install
 RUN /root/bin/buildrpm xdmod
 
-# WORKDIR /root
-
+WORKDIR /root
+RUN dnf install -y mysql
 # Once the `ryanrath:xdmod11-php8` branch is merged into ${XDMOD_GITHUB_TAG}, this line will no longer be needed:
 # RUN sed -i 's|rm -rf /var/lib/mysql && mkdir -p /var/lib/mysql||g' /root/xdmod/tests/ci/bootstrap.sh
 

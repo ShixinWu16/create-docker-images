@@ -8,7 +8,7 @@ COPY assets/ /tmp/assets
 #Installs the software requirements for installing xdmod
 RUN dnf makecache && dnf -y install epel-release
 RUN dnf module -y enable nodejs:16
-RUN dnf module -y enable php:7.2
+RUN dnf module -y enable php:7.4
 RUN dnf -y install \
     rpm-build \
     httpd \
@@ -57,7 +57,7 @@ RUN dnf -y install \
 # RUN dnf install -y /tmp/assets/mariadb-rpms/*.rpm
 
 # Install the mongodb pecl extension
-RUN yes '' | pecl install mongodb-1.16.2
+RUN yes '' | pecl install mongodb
 
 # Enable the mongodb php extension
 RUN echo "extension=mongodb.so" > /etc/php.d/40-mongodb.ini

@@ -1,28 +1,29 @@
 services:
   mongodb:
-    image: mongo:5.0
+    image: mongo:latest
     container_name: mongodb
     hostname: mongodb
     ports:
       - "27017:27017"
-    command: [--auth]
+    # command: [--auth]
     environment:
-      MONGO_INITDB_ROOT_USERNAME: xdmod
-      MONGO_INITDB_ROOT_PASSWORD: uvVA6bIC9DMts30ZiLRaH
-    healthcheck:
-      test: [ "CMD", "mongo", "--eval", "db.adminCommand('ping')" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    #volumes:
-    #  - ./bin/mongodbaccountcreation.js:/docker-entrypoint-initdb.d/init-mongo-js:ro
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: QQtggS+mU4d50+hT7GzfM
+      MONGO_INITDB_DATABASE: admin
+    #healthcheck:
+    #  test: [ "CMD", "mongo", "--eval", "db.adminCommand('ping')" ]
+    #  interval: 10s
+    #  timeout: 5s
+    #  retries: 5
+    volumes:
+      - ./bin/mongo-init.js:/docker-entrypoint-initdb.d/init-mongo-js:ro
     networks:
       xdmod_default: {}
 
   mariadb:
     hostname: mariadb
     container_name: mariadb
-    image: tools-int-01.ccr.xdmod.org/mariadb:x86_64-rockylinux8.5-01-general2
+    image: tools-int-01.ccr.xdmod.org/mariadb:x86_64-rockylinux8.5-01-populated
     healthcheck:
       test: [ "CMD", "/usr/local/bin/healthcheck.sh", "--connect", "--innodb_initialized",  "--datadir", "/var/lib/db" ]
       interval: 10s
@@ -36,8 +37,8 @@ services:
     container_name: xdmod-job-performance
     hostname: xdmod-job-performance
     depends_on:
-      mongodb:
-        condition: service_healthy
+      #mongodb:
+      #  condition: service_healthy
       mariadb:
         condition: service_healthy
     networks:
