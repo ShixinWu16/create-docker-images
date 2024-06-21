@@ -1,6 +1,6 @@
 #!/usr/bin/env mongo
 
-db = db.getSiblingDB("auth");
+# db = db.getSiblingDB("auth");
 
 db.createUser({
     user: "admin",

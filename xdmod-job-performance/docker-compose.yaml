@@ -3,13 +3,12 @@ services:
     image: mongo:latest
     container_name: mongodb
     hostname: mongodb
+    restart: always
     ports:
       - "27017:27017"
-    # command: [--auth]
     environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: QQtggS+mU4d50+hT7GzfM
-      MONGO_INITDB_DATABASE: admin
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootuser123
     #healthcheck:
     #  test: [ "CMD", "mongo", "--eval", "db.adminCommand('ping')" ]
     #  interval: 10s
@@ -23,7 +22,7 @@ services:
   mariadb:
     hostname: mariadb
     container_name: mariadb
-    image: tools-int-01.ccr.xdmod.org/mariadb:x86_64-rockylinux8.5-01-populated
+    image: tools-int-01.ccr.xdmod.org/mariadb:x86_64-rockylinux8.5-01-populated2
     healthcheck:
       test: [ "CMD", "/usr/local/bin/healthcheck.sh", "--connect", "--innodb_initialized",  "--datadir", "/var/lib/db" ]
       interval: 10s
@@ -32,10 +31,13 @@ services:
     networks:
       xdmod_default: {}
 
-  xdmod-job-performance:
+  # TODO: Change to xdmod so it has access
+  xdmod:
     image: ${XDMOD_JOB_PERFORMANCE_IMAGE}
-    container_name: xdmod-job-performance
-    hostname: xdmod-job-performance
+    container_name: xdmod
+    hostname: xdmod
+    volumes:
+      - ./xdmod-supremm:/root/xdmod-supremm
     depends_on:
       #mongodb:
       #  condition: service_healthy
