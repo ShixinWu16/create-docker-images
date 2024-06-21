@@ -1,21 +1,18 @@
 services:
   mongodb:
-    image: mongo:latest
+    image: mongo:5.0
     container_name: mongodb
     hostname: mongodb
-    restart: always
     ports:
       - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: rootuser123
-    #healthcheck:
-    #  test: [ "CMD", "mongo", "--eval", "db.adminCommand('ping')" ]
-    #  interval: 10s
-    #  timeout: 5s
-    #  retries: 5
-    volumes:
-      - ./bin/mongo-init.js:/docker-entrypoint-initdb.d/init-mongo-js:ro
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    healthcheck:
+      test: [ "CMD", "mongo", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       xdmod_default: {}
 
@@ -31,18 +28,19 @@ services:
     networks:
       xdmod_default: {}
 
-  # TODO: Change to xdmod so it has access
   xdmod:
     image: ${XDMOD_JOB_PERFORMANCE_IMAGE}
     container_name: xdmod
     hostname: xdmod
-    volumes:
-      - ./xdmod-supremm:/root/xdmod-supremm
+    links:
+      - mongodb
     depends_on:
-      #mongodb:
-      #  condition: service_healthy
+      mongodb:
+        condition: service_healthy
       mariadb:
         condition: service_healthy
+    volumes:
+      - ./xdmod-supremm:/root/xdmod-supremm
     networks:
       xdmod_default: {}
 
