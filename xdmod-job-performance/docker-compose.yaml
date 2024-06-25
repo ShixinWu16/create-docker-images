@@ -3,13 +3,14 @@ services:
     image: mongo:5.0
     container_name: mongodb
     hostname: mongodb
+    restart: always
     ports:
       - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: admin
     healthcheck:
-      test: [ "CMD", "mongo", "--eval", "db.adminCommand('ping')" ]
+      test: [ "CMD", "mongo", "--username", "root", "--password", "admin", "--eval", "db.adminCommand('ping')" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -19,7 +20,8 @@ services:
   mariadb:
     hostname: mariadb
     container_name: mariadb
-    image: tools-int-01.ccr.xdmod.org/mariadb:x86_64-rockylinux8.5-01-populated2
+    image: tools-int-01.ccr.xdmod.org/mariadb:x86_64-rockylinux8.5-01-populated
+    restart: always
     healthcheck:
       test: [ "CMD", "/usr/local/bin/healthcheck.sh", "--connect", "--innodb_initialized",  "--datadir", "/var/lib/db" ]
       interval: 10s
@@ -41,6 +43,7 @@ services:
         condition: service_healthy
     volumes:
       - ./xdmod-supremm:/root/xdmod-supremm
+      - ./xdmod-setup.tcl:/root/xdmod-setup.tcl
     networks:
       xdmod_default: {}
 

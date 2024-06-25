@@ -15,6 +15,7 @@ services:
     hostname: mariadb
     container_name: mariadb
     image: tools-int-01.ccr.xdmod.org/mariadb:x86_64-rockylinux8.5-01-populated
+    restart: always
     volumes:
       - ./50-server.cnf:/etc/mysql/mariadb.conf.d/50-server.cnf
     healthcheck:

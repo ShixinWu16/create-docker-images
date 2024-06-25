@@ -49,7 +49,7 @@ RUN dnf install -y mysql
 # RUN sed -i 's|rm -rf /var/lib/mysql && mkdir -p /var/lib/mysql||g' /root/xdmod/tests/ci/bootstrap.sh
 
 RUN chmod +x /root/xdmod/tests/ci/bootstrap.sh
-CMD  /root/xdmod/tests/ci/bootstrap.sh && tail -f /dev/null
+CMD  /root/xdmod/tests/ci/bootstrap.sh ; tail -f /dev/null
 # RUN /root/xdmod/tests/ci/bootstrap.sh
 
 # RUN dnf clean all
