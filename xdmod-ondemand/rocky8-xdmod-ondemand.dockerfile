@@ -23,7 +23,8 @@ RUN rm -rf /var/cache/dnf
 WORKDIR /root
 
 #RUN git clone -b xdmod11.0 https://github.com/ubccr/xdmod.git /root/xdmod
-RUN git clone https://github.com/ubccr/xdmod-ondemand.git /root/xdmod-ondemand
+# RUN git clone https://github.com/ubccr/xdmod-ondemand.git /root/xdmod-ondemand
+COPY /xdmod-ondemand /root/xdmod-ondemand
 
 RUN ln -s ~/xdmod-ondemand/ ~/xdmod/open_xdmod/modules/ondemand
 

@@ -1,6 +1,6 @@
 services:
   mongodb:
-    image: mongo:5.0
+    image: mongo:latest
     container_name: mongodb
     hostname: mongodb
     restart: always
@@ -20,7 +20,7 @@ services:
   mariadb:
     hostname: mariadb
     container_name: mariadb
-    image: tools-int-01.ccr.xdmod.org/mariadb:x86_64-rockylinux8.5-01-populated
+    image: tools-int-01.ccr.xdmod.org/mariadb:x86_64-rockylinux8.5-01-populated2
     restart: always
     healthcheck:
       test: [ "CMD", "/usr/local/bin/healthcheck.sh", "--connect", "--innodb_initialized",  "--datadir", "/var/lib/db" ]

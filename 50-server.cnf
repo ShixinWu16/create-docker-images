@@ -31,8 +31,9 @@ skip-name-resolve=0
 # * Fine Tuning
 #
 
+
 #key_buffer_size        = 128M
-#max_allowed_packet     = 1G
+#max_allowed_packet      = 256M
 #thread_stack           = 192K
 #thread_cache_size      = 8
 # This replaces the startup script and checks MyISAM tables if needed
