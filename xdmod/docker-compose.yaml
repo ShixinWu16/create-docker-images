@@ -23,7 +23,7 @@ services:
     container_name: mariadb
     image: ${MARIADB_IMAGE}
     healthcheck:
-      test: [ "CMD", "/usr/local/bin/healthcheck.sh", "--connect", "--innodb_initialized"] #,  "--datadir", "/var/lib/db" ]
+      test: [ "CMD", "/usr/local/bin/healthcheck.sh", "--connect", "--innodb_initialized",  "--datadir", "/var/lib/db" ]
       interval: 10s
       timeout: 5s
       retries: 5

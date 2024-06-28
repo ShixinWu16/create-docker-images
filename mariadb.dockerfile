@@ -5,11 +5,11 @@ ENV HOSTNAME=mariadb
 ENV MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1
 ENV MYSQL_DATABASE=shared-database
 
-# RUN cp -r /var/lib/mysql/ /var/lib/db/
+RUN cp -r /var/lib/mysql/ /var/lib/db/
 
-COPY ./50-server.cnf /etc/mysql/mariadb.conf.d/50-server.cnf
+COPY ./my.cnf /etc/mysql/my.cnf
 
 
 EXPOSE 3306
 
-# CMD ["mariadbd", "--datadir", "/var/lib/db"]
+CMD ["mysqld", "--datadir", "/var/lib/db"]

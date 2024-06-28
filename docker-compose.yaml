@@ -82,5 +82,3 @@ services:
         expose:
             - 3306
         restart: always
-        volumes:
-            - ./50-server.cnf:/etc/mysql/mariadb.conf.d/50-server.cnf
