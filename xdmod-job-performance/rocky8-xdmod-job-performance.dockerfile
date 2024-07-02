@@ -1,6 +1,6 @@
 ARG BASE_IMAGE_PLATFORM
 ARG XDMOD_IMAGE
-FROM --platform=${BASE_IMAGE_PLATFORM} tools-int-01.ccr.xdmod.org/xdmod:x86_64-rockylinux8.5-v11.0-1.0-01-populated
+FROM --platform=${BASE_IMAGE_PLATFORM} tools-int-01.ccr.xdmod.org/xdmod:x86_64-rockylinux8.5-v11.0-1.0-01-populated3
 
 LABEL description="The XDMoD Job Performance image used in our CI builds or local testing."
 
@@ -60,7 +60,7 @@ RUN chmod +x ~/bin/importmongo.sh
 
 CMD ~/bin/services start && \
     # mongod -f /etc/mongod.conf --fork && \
-    # ~/bin/importmongo.sh && \
+    ~/bin/importmongo.sh && \
     wget -nv https://raw.githubusercontent.com/ubccr/xdmod-supremm/xdmod11.0/tests/integration/scripts/mongo_auth.mongojs && \
     mongo mongodb://root:admin@mongodb:27017 mongo_auth.mongojs && \
     rm -rf mongo_auth.mongojs && \
@@ -70,9 +70,9 @@ CMD ~/bin/services start && \
     # wget -nv https://raw.githubusercontent.com/ubccr/xdmod-supremm/xdmod11.0/tests/integration/scripts/xdmod-setup.tcl && \
     expect xdmod-setup.tcl | col -b || true && \
     # rm -rf xdmod-setup.tcl && \
-    aggregate_supremm.sh  && \
-    acl-config \
+    aggregate_supremm.sh -d && \
+    acl-config ; \
     # mongod -f /etc/mongod.conf --shutdown && \
-    ; tail -f /dev/null
+    tail -f /dev/null
 
 WORKDIR /root

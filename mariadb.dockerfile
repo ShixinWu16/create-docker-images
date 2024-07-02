@@ -9,7 +9,6 @@ RUN cp -r /var/lib/mysql/ /var/lib/db/
 
 COPY ./my.cnf /etc/mysql/my.cnf
 
-
 EXPOSE 3306
 
 CMD ["mysqld", "--datadir", "/var/lib/db"]
