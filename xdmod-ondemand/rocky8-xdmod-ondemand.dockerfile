@@ -24,11 +24,15 @@ WORKDIR /root
 
 #RUN git clone -b xdmod11.0 https://github.com/ubccr/xdmod.git /root/xdmod
 # RUN git clone https://github.com/ubccr/xdmod-ondemand.git /root/xdmod-ondemand
-COPY /xdmod-ondemand /root/xdmod-ondemand
+RUN git clone https://github.com/ShixinWu16/xdmod-ondemand /root/xdmod-ondemand
+
+RUN git clone -b xdmod11.0 https://github.com/ShixinWu16/xdmod /root/xdmod
 
 RUN ln -s ~/xdmod-ondemand/ ~/xdmod/open_xdmod/modules/ondemand
 
 WORKDIR /root/xdmod
+
+RUN composer install
 
 RUN /root/bin/buildrpm xdmod ondemand
 
@@ -44,4 +48,7 @@ RUN dnf install -y ~/rpmbuild/RPMS/noarch/xdmod*.rpm
 RUN chmod +x /root/xdmod-ondemand/tests/scripts/bootstrap.sh
 CMD ~/bin/services start && \
      /root/xdmod-ondemand/tests/scripts/bootstrap.sh && \
-    ~/bin/services stop ; tail -f /dev/null
+     rm -rf /root/xdmod /root/xdmod-ondemand && \
+    ~/bin/services stop ; \
+    tail -f /dev/null
+

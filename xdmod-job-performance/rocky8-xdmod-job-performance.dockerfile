@@ -42,9 +42,11 @@ WORKDIR /root/xdmod-supremm
 
 RUN composer install
 
+
 WORKDIR /root/xdmod
 
 RUN composer install
+
 
 RUN ln -s ~/xdmod-supremm/ ~/xdmod/open_xdmod/modules/supremm
 
@@ -53,10 +55,6 @@ RUN /root/bin/buildrpm supremm
 RUN dnf install -y ~/rpmbuild/RPMS/noarch/xdmod-supremm*.rpm
 
 RUN chmod +x ~/bin/importmongo.sh
-
-RUN rm -rf xdmod
-
-RUN rm -rf xdmod-supremm
 
 CMD ~/bin/services start && \
     ~/bin/importmongo.sh && \
@@ -69,6 +67,7 @@ CMD ~/bin/services start && \
     expect xdmod-setup.tcl | col -b || true && \
     rm -rf xdmod-setup.tcl && \
     aggregate_supremm.sh -d && \
+    # rm -rf /root/xdmod-supremm /root/xdmod && \
     acl-config ; \
     tail -f /dev/null
 

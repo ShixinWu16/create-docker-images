@@ -4,7 +4,7 @@ FROM --platform=${BASE_IMAGE_PLATFORM} ${BASE_IMAGE}
 
 LABEL description="Base image containing XDMoD required software."
 
-COPY assets/ /tmp/assets
+# COPY assets/ /tmp/assets
 #Installs the software requirements for installing xdmod
 RUN dnf makecache && dnf -y install epel-release
 RUN dnf module -y enable nodejs:16

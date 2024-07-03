@@ -18,7 +18,8 @@ ENV XDMOD_TEST_MODE=fresh_install
 COPY assets /tmp/assets
 COPY bin /root/bin
 
-COPY assets/mariadb-server.cnf /etc/my.cnf.d/mariadb-server.cnf
+# COPY assets/mariadb-server.cnf /etc/my.cnf.d/mariadb-server.cnf
+RUN rm -rf /tmp/assets/mariadb-rpms /tmp/assets/mariadb-server.cnf /tmp/assets/mysql-server.cnf
 
 # Generate SSL Key
 RUN openssl genrsa -rand /proc/cpuinfo:/proc/filesystems:/proc/interrupts:/proc/ioports:/proc/uptime 2048 > /etc/pki/tls/private/localhost.key
@@ -47,4 +48,3 @@ CMD  /root/xdmod/tests/ci/bootstrap.sh && \
      dnf clean all && \
      rm -rf /var/cache/yum /root/xdmod /root/rpmbuild /var/cache/dnf ; \
      tail -f /dev/null
-
