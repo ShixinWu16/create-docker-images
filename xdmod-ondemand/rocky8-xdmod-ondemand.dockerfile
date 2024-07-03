@@ -1,6 +1,6 @@
 ARG BASE_IMAGE_PLATFORM
 ARG XDMOD_IMAGE
-FROM --platform=${BASE_IMAGE_PLATFORM} tools-int-01.ccr.xdmod.org/xdmod:x86_64-rockylinux8.5-v11.0-1.0-01-populated3
+FROM --platform=${BASE_IMAGE_PLATFORM} tools-int-01.ccr.xdmod.org/xdmod:x86_64-rockylinux8.5-v11.0-1.0-01-populated
 
 LABEL description="The XDMoD OnDemand image used in our CI builds or local testing."
 

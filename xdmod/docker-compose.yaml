@@ -12,8 +12,6 @@ services:
       - '443:443'
     volumes:
       - ./bin:/root/bin
-      - ./xdmod/tests/ci/bootstrap.sh:/root/xdmod/tests/ci/bootstrap.sh
-      - ./xdmod:/root/xdmod
     mem_reservation: 2G
     networks:
       xdmod_default: {}

@@ -20,7 +20,7 @@ services:
   mariadb:
     hostname: mariadb
     container_name: mariadb
-    image: tools-int-01.ccr.xdmod.org/mariadb:x86_64-rockylinux8.5-01-populated3
+    image: tools-int-01.ccr.xdmod.org/mariadb:x86_64-rockylinux8.5-01-populated
     restart: always
     healthcheck:
       test: [ "CMD", "/usr/local/bin/healthcheck.sh", "--connect", "--innodb_initialized",  "--datadir", "/var/lib/db" ]
@@ -43,9 +43,6 @@ services:
         condition: service_healthy
       mariadb:
         condition: service_healthy
-    volumes:
-      - ./xdmod-supremm:/root/xdmod-supremm
-      - ./xdmod-setup.tcl:/root/xdmod-setup.tcl
     networks:
       xdmod_default: {}
 
