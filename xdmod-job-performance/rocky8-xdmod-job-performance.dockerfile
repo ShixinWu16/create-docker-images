@@ -36,17 +36,16 @@ RUN sed -i 's/^#nojournal = true/nojournal = true/; s/^#noprealloc = true/noprea
 # RUN git clone -b xdmod11.0 https://github.com/ubccr/xdmod.git
 # RUN git clone -b xdmod11.0 https://github.com/ubccr/xdmod-supremm.git
 
-RUN git clone -b dockersplit https://github.com/ShixinWu16/xdmod-supremm.git
+RUN git clone -b dockersplit https://github.com/ShixinWu16/xdmod-supremm.git /root/xdmod-supremm && \
+    git clone -b xdmod11.0 https://github.com/ShixinWu16/xdmod /root/xdmod
 
 WORKDIR /root/xdmod-supremm
 
 RUN composer install
 
-
 WORKDIR /root/xdmod
 
 RUN composer install
-
 
 RUN ln -s ~/xdmod-supremm/ ~/xdmod/open_xdmod/modules/supremm
 
