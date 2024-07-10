@@ -39,12 +39,12 @@ WORKDIR /root
 # Once the `ryanrath:xdmod11-php8` branch is merged into ${XDMOD_GITHUB_TAG}, this line will no longer be needed:
 # RUN sed -i 's|rm -rf /var/lib/mysql && mkdir -p /var/lib/mysql||g' /root/xdmod/tests/ci/bootstrap.sh
 
-RUN rm -rf /var/cache/yum /var/cache/dnf /root/bin/buildrpm /root/xdmod/assets/mariadb-rpms && \
+RUN rm -rf /var/cache/yum /var/cache/dnf && \
     dnf clean all && \
     dnf install -y mysql && \
     chmod +x /root/xdmod/tests/ci/bootstrap.sh
 
 CMD /root/xdmod/tests/ci/bootstrap.sh && \
      dnf clean all && \
-     rm -rf /var/cache/yum /root/xdmod /var/cache/dnf /root/rpmbuild && \
+     rm -rf /var/cache/yum /root/xdmod /var/cache/dnf && \
      tail -f /dev/null
