@@ -5,13 +5,12 @@ services:
         condition: service_healthy
     hostname: xdmod
     container_name: xdmod
-    image: ${XDMOD_IMAGE}
+    command: ${COMMAND}
+    image:  ${XDMOD_IMAGE}
     environment:
       - COMPOSER_ALLOW_SUPERUSER=1
     ports:
       - '443:443'
-    volumes:
-      - ./bin:/root/bin
     mem_reservation: 2G
     networks:
       xdmod_default: {}
@@ -31,4 +30,3 @@ services:
 networks:
   xdmod_default:
     name: xdmod_default
-

@@ -1,6 +1,6 @@
 ARG BASE_IMAGE_PLATFORM
 ARG XDMOD_IMAGE
-FROM --platform=${BASE_IMAGE_PLATFORM} tools-int-01.ccr.xdmod.org/xdmod:x86_64-rockylinux8.5-v11.0-1.0-01-populated
+FROM --platform=${BASE_IMAGE_PLATFORM} tools-int-01.ccr.xdmod.org/xdmod:x86_64-rockylinux8.5-v11.0-1.0-01-testbuild
 
 LABEL description="The XDMoD Job Performance image used in our CI builds or local testing."
 
@@ -36,8 +36,9 @@ RUN sed -i 's/^#nojournal = true/nojournal = true/; s/^#noprealloc = true/noprea
 # RUN git clone -b xdmod11.0 https://github.com/ubccr/xdmod.git
 # RUN git clone -b xdmod11.0 https://github.com/ubccr/xdmod-supremm.git
 
-RUN git clone -b dockersplit https://github.com/ShixinWu16/xdmod-supremm.git /root/xdmod-supremm && \
-    git clone -b xdmod11.0 https://github.com/ShixinWu16/xdmod /root/xdmod
+RUN git clone -b dockersplit --depth=1 https://github.com/ShixinWu16/xdmod-supremm.git /root/xdmod-supremm && \
+    git clone -b xdmod11.0 --depth=1 https://github.com/ShixinWu16/xdmod /root/xdmod && \
+    ln -s ~/xdmod-supremm/ ~/xdmod/open_xdmod/modules/supremm
 
 WORKDIR /root/xdmod-supremm
 
@@ -47,13 +48,12 @@ WORKDIR /root/xdmod
 
 RUN composer install
 
-RUN ln -s ~/xdmod-supremm/ ~/xdmod/open_xdmod/modules/supremm
+# cannot but the buildRPM and install RPM in the same layer
+RUN /root/bin/buildrpm xdmod supremm
 
-RUN /root/bin/buildrpm supremm
-
-RUN dnf install -y ~/rpmbuild/RPMS/noarch/xdmod-supremm*.rpm
-
-RUN chmod +x ~/bin/importmongo.sh
+RUN dnf install -y ~/rpmbuild/RPMS/noarch/xdmod-supremm*.rpm && \
+    chmod +x ~/bin/importmongo.sh
+    # rm -rf /root/xdmod /root/xdmod-supremm
 
 CMD ~/bin/services start && \
     ~/bin/importmongo.sh && \

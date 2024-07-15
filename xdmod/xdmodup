@@ -1,0 +1,58 @@
+#!/bin/bash
+
+log_info() {
+    printf "\n\e[0;35m $1\e[0m\n\n"
+}
+
+log_warn() {
+    printf "\e[0;33m $1\e[0m\n"
+}
+
+# starts exisiting image
+start() {
+    export XDMOD_IMAGE=$1
+    export COMMAND="start"
+    docker-compose up -d
+}
+
+# builds xdmod with just tables
+build() {
+    export COMMAND="build"
+    docker-compose up -d
+}
+
+# builds xdmod with test data
+testbuild() {
+    export COMMAND="testbuild"
+    docker-compose up -d
+}
+
+# ignore the empty string warning for COMMAND
+stop() {
+    docker-compose down
+}
+
+case "$1" in
+    'start')
+        if [ "$2" ]
+        then
+            start "$2"
+        else
+            log_info "Usage: $0 { start {image} }"
+            exit 1
+        fi
+        ;;
+    'build')
+        build
+        ;;
+    'testbuild')
+        testbuild
+        ;;
+    'stop')
+        stop
+        ;;
+    *)
+        log_info "Usage: $0 { start {image} | build | testbuild | stop}"
+        exit 1
+        ;;
+esac

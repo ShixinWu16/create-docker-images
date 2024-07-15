@@ -24,11 +24,9 @@ WORKDIR /root
 
 #RUN git clone -b xdmod11.0 https://github.com/ubccr/xdmod.git /root/xdmod
 # RUN git clone https://github.com/ubccr/xdmod-ondemand.git /root/xdmod-ondemand
-RUN git clone https://github.com/ShixinWu16/xdmod-ondemand /root/xdmod-ondemand
-
-RUN git clone -b xdmod11.0 https://github.com/ShixinWu16/xdmod /root/xdmod
-
-RUN ln -s ~/xdmod-ondemand/ ~/xdmod/open_xdmod/modules/ondemand
+RUN git clone -b main --depth=1 https://github.com/ShixinWu16/xdmod-ondemand /root/xdmod-ondemand && \
+    git clone -b xdmod11.0 --depth=1 https://github.com/ShixinWu16/xdmod /root/xdmod && \
+    ln -s ~/xdmod-ondemand/ ~/xdmod/open_xdmod/modules/ondemand
 
 WORKDIR /root/xdmod
 
@@ -41,14 +39,13 @@ RUN /root/bin/buildrpm xdmod ondemand
 # RPMS not out for 11.0
 
 # RUN wget -nv -O /root/xdmod-ondemand/tests/scripts/bootstrap.sh https://raw.githubusercontent.com/aaronweeden/xdmod-ondemand/use-new-docker-container/tests/scripts/bootstrap.sh
-WORKDIR /root
-
 RUN dnf install -y ~/rpmbuild/RPMS/noarch/xdmod*.rpm
 
 RUN chmod +x /root/xdmod-ondemand/tests/scripts/bootstrap.sh
 CMD ~/bin/services start && \
      /root/xdmod-ondemand/tests/scripts/bootstrap.sh && \
      rm -rf /root/xdmod /root/xdmod-ondemand && \
-    ~/bin/services stop ; \
-    tail -f /dev/null
+     ~/bin/services stop && \
+     tail -f /dev/null
 
+WORKDIR /root
