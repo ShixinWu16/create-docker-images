@@ -12,9 +12,7 @@ services:
       xdmod_default: {}
 
   mariadb:
-    hostname: mariadb
-    container_name: mariadb
-    image: tools-int-01.ccr.xdmod.org/mariadb:x86_64-rockylinux8.5-01-populated
+    image: ${MARIADB_IMAGE}
     restart: always
     healthcheck:
       test: [ "CMD", "/usr/local/bin/healthcheck.sh", "--connect", "--innodb_initialized",  "--datadir", "/var/lib/db" ]

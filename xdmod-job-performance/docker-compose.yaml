@@ -1,14 +1,6 @@
 services:
   mongodb:
     image: mongo:5.0
-    container_name: mongodb
-    hostname: mongodb
-    restart: always
-    ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: admin
     healthcheck:
       test: [ "CMD", "mongo", "--username", "root", "--password", "admin", "--eval", "db.adminCommand('ping')" ]
       interval: 10s
@@ -18,17 +10,12 @@ services:
       xdmod_default: {}
 
   mariadb:
-    hostname: mariadb
-    container_name: mariadb
-    image: tools-int-01.ccr.xdmod.org/mariadb:x86_64-rockylinux8.5-01-testbuild
-    restart: always
+    image: ${MARIADB_IMAGE}
     healthcheck:
       test: [ "CMD", "/usr/local/bin/healthcheck.sh", "--connect", "--innodb_initialized",  "--datadir", "/var/lib/db" ]
       interval: 10s
       timeout: 5s
       retries: 5
-    volumes:
-      - ./my.cnf:/etc/mysql/my.cnf
     networks:
       xdmod_default: {}
 

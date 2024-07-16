@@ -79,6 +79,12 @@ services:
         build:
             dockerfile: mariadb.dockerfile
         container_name: mariadb
-        expose:
-            - 3306
+        hostname: mariadb
+        restart: always
+    mongodb:
+        image: ${MONGODB_IMAGE}
+        build:
+            dockerfile: mongodb.dockerfile
+        container_name: mongodb
+        hostname: mongodb
         restart: always

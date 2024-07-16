@@ -16,8 +16,6 @@ services:
       xdmod_default: {}
 
   mariadb:
-    hostname: mariadb
-    container_name: mariadb
     image: ${MARIADB_IMAGE}
     healthcheck:
       test: [ "CMD", "/usr/local/bin/healthcheck.sh", "--connect", "--innodb_initialized",  "--datadir", "/var/lib/db" ]

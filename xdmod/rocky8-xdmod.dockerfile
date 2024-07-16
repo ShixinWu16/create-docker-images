@@ -18,7 +18,6 @@ ENV XDMOD_TEST_MODE=fresh_install
 COPY assets /tmp/assets
 COPY bin /root/bin
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-
 # COPY assets/mariadb-server.cnf /etc/my.cnf.d/mariadb-server.cnf
 
 # Generate SSL Key and Generate SSL Certificate
@@ -42,10 +41,10 @@ RUN composer install &&  \
 # Once the `ryanrath:xdmod11-php8` branch is merged into ${XDMOD_GITHUB_TAG}, this line will no longer be needed:
 # RUN sed -i 's|rm -rf /var/lib/mysql && mkdir -p /var/lib/mysql||g' /root/xdmod/tests/ci/bootstrap.sh
 
-RUN dnf install -y mysql
+RUN dnf install -y mysql && \
+    dnf install -y ~/rpmbuild/RPMS/*/*.rpm
 
 #/usr/local/bin/entrypoint.sh
-#COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 WORKDIR /root

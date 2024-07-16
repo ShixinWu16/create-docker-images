@@ -3,10 +3,6 @@
 # an existing one.  This code is only designed to work inside the XDMoD test
 # docker instances. However, since it is designed to test a real install, the
 # set of commands that are run would work on a real production system.
-echo "running entry"
-BASEDIR=/root/xdmod/tests/ci
-REPODIR=`realpath $BASEDIR/../../`
-
 function copy_template_httpd_conf {
   cp /usr/share/xdmod/templates/apache.conf /etc/httpd/conf.d/xdmod.conf
 }
@@ -22,24 +18,21 @@ pass=''
 
 if [ "$1" = "build" ]
 then
-  echo "in build"
+  BASEDIR=/root/xdmod/tests/ci
+  REPODIR=`realpath $BASEDIR/../../`
   user=root
   pass=''
   tableexist=$(mysql -u${user} -p${pass} --host mariadb -e "SHOW DATABASES LIKE 'modw'")
-  echo "returned table search"
-  echo $tableexist
+
   if [[ -z "$tableexist" ]]; then
-    echo "returned 0 building rpms"
-    dnf install -y ~/rpmbuild/RPMS/*/*.rpm
+#    dnf install -y ~/rpmbuild/RPMS/*/*.rpm
     copy_template_httpd_conf
-    echo "creating root xdmod user"
     mysql -h mariadb -e "CREATE USER 'root'@'xdmod' IDENTIFIED BY '';
     GRANT ALL PRIVILEGES ON *.* TO 'root'@'xdmod' WITH GRANT OPTION;
     FLUSH PRIVILEGES;"
 
     # TODO: Replace diff files with hard fixes
     # Modify integration sso tests to work with cloud realm
-    echo "building databases"
     if [ "$XDMOD_REALMS" = "cloud" ]; then
       if ! patch --dry-run -Rfsup1 --directory=$REPODIR < $BASEDIR/diff/SSOLoginTest.php.diff >/dev/null; then
         # -- Fix users searched in SSO test
@@ -66,19 +59,22 @@ then
     expect $BASEDIR/scripts/xdmod-setup-finish.tcl | col -b
   fi
 
+  sudo -u xdmod xdmod-ingestor
+
   dnf clean all
   rm -rf /var/cache/yum /var/cache/dnf
   rm -rf /root/xdmod /root/rpmbuild
   rm -f /var/run/httpd/httpd.pid
   /usr/sbin/postfix start
   php-fpm
-  echo "running httpd"
   /usr/sbin/httpd -DFOREGROUND
 fi
 
 if [ "$1" = "testbuild" ]
 then
-  echo "in testbuild"
+  git clone -b xdmod11.0 --depth=1 https://github.com/ShixinWu16/xdmod /root/xdmod
+  BASEDIR=/root/xdmod/tests/ci
+  REPODIR=`realpath $BASEDIR/../../`
   REF_SOURCE=`realpath $BASEDIR/../artifacts/xdmod/referencedata`
   REF_DIR=/var/tmp/referencedata
   function set_resource_spec_end_times {
@@ -106,48 +102,44 @@ then
   # ensure php command-line errors are logged to a file
   sed -i 's/^;error_log = php_errors.log/error_log = \/var\/log\/php_errors.log/' /etc/php.ini
 
-  user=root
-  pass=''
-  tableexist=$(mysql -u${user} -p${pass} --host mariadb -e "SHOW DATABASES LIKE 'modw'")
-  echo "returned table search"
-  echo $tableexist
-  if [[ -z "$tableexist" ]]; then
-    echo "returned 0 building rpms"
-    dnf install -y ~/rpmbuild/RPMS/*/*.rpm
-    copy_template_httpd_conf
-    echo "creating root xdmod user"
-    mysql -h mariadb -e "CREATE USER 'root'@'xdmod' IDENTIFIED BY '';
-    GRANT ALL PRIVILEGES ON *.* TO 'root'@'xdmod' WITH GRANT OPTION;
-    FLUSH PRIVILEGES;"
-
-    # TODO: Replace diff files with hard fixes
-    # Modify integration sso tests to work with cloud realm
-    echo "building databases"
-    if [ "$XDMOD_REALMS" = "cloud" ]; then
-      if ! patch --dry-run -Rfsup1 --directory=$REPODIR < $BASEDIR/diff/SSOLoginTest.php.diff >/dev/null; then
-        # -- Fix users searched in SSO test
-        patch -up1 --directory=$REPODIR < $BASEDIR/diff/SSOLoginTest.php.diff
-      fi
-    else
-      if patch --dry-run -Rfsup1 --directory=$REPODIR < $BASEDIR/diff/SSOLoginTest.php.diff >/dev/null; then
-        # -- Reverse previous patch
-        patch -R -up1 --directory=$REPODIR < $BASEDIR/diff/SSOLoginTest.php.diff
-      fi
-    fi
-
-    expect $BASEDIR/scripts/xdmod-setup-start.tcl | col -b
-
-    if [[ "$XDMOD_REALMS" == *"jobs"* ]]; then
-      expect $BASEDIR/scripts/xdmod-setup-jobs.tcl | col -b
-    fi
-    if [[ "$XDMOD_REALMS" == *"storage"* ]]; then
-      expect $BASEDIR/scripts/xdmod-setup-storage.tcl | col -b
-    fi
-    if [[  "$XDMOD_REALMS" == *"cloud"* ]]; then
-      expect $BASEDIR/scripts/xdmod-setup-cloud.tcl | col -b
-    fi
-
-    expect $BASEDIR/scripts/xdmod-setup-finish.tcl | col -b
+#  user=root
+#  pass=''
+#  tableexist=$(mysql -u${user} -p${pass} --host mariadb -e "SHOW DATABASES LIKE 'modw'")
+   if [[ -z "$tableexist" ]]; then
+##    dnf install -y ~/rpmbuild/RPMS/*/*.rpm
+#    copy_template_httpd_conf
+#    mysql -h mariadb -e "CREATE USER 'root'@'xdmod' IDENTIFIED BY '';
+#    GRANT ALL PRIVILEGES ON *.* TO 'root'@'xdmod' WITH GRANT OPTION;
+#    FLUSH PRIVILEGES;"
+#
+#    # TODO: Replace diff files with hard fixes
+#    # Modify integration sso tests to work with cloud realm
+#    echo "building databases"
+#    if [ "$XDMOD_REALMS" = "cloud" ]; then
+#      if ! patch --dry-run -Rfsup1 --directory=$REPODIR < $BASEDIR/diff/SSOLoginTest.php.diff >/dev/null; then
+#        # -- Fix users searched in SSO test
+#        patch -up1 --directory=$REPODIR < $BASEDIR/diff/SSOLoginTest.php.diff
+#      fi
+#    else
+#      if patch --dry-run -Rfsup1 --directory=$REPODIR < $BASEDIR/diff/SSOLoginTest.php.diff >/dev/null; then
+#        # -- Reverse previous patch
+#        patch -R -up1 --directory=$REPODIR < $BASEDIR/diff/SSOLoginTest.php.diff
+#      fi
+#    fi
+#
+#    expect $BASEDIR/scripts/xdmod-setup-start.tcl | col -b
+#
+#    if [[ "$XDMOD_REALMS" == *"jobs"* ]]; then
+#      expect $BASEDIR/scripts/xdmod-setup-jobs.tcl | col -b
+#    fi
+#    if [[ "$XDMOD_REALMS" == *"storage"* ]]; then
+#      expect $BASEDIR/scripts/xdmod-setup-storage.tcl | col -b
+#    fi
+#    if [[  "$XDMOD_REALMS" == *"cloud"* ]]; then
+#      expect $BASEDIR/scripts/xdmod-setup-cloud.tcl | col -b
+#    fi
+#
+#    expect $BASEDIR/scripts/xdmod-setup-finish.tcl | col -b
 
     xdmod-import-csv -t hierarchy -i $REF_DIR/hierarchy.csv
     xdmod-import-csv -t group-to-hierarchy -i $REF_DIR/group-to-hierarchy.csv
@@ -194,17 +186,14 @@ then
   rm -f /var/run/httpd/httpd.pid
   /usr/sbin/postfix start
   php-fpm
-  echo "running httpd"
   /usr/sbin/httpd -DFOREGROUND
 fi
 
 if [ "$1" = "start" ]
 then
-  echo "in run mode"
-#  httpd -k start
-#  /usr/sbin/postfix start
-#  php-fpm
-#  echo "running httpd"
+  /usr/sbin/postfix start
+  php-fpm
+  rm -f /var/run/httpd/httpd.pid
   /usr/sbin/httpd -DFOREGROUND
 fi
 

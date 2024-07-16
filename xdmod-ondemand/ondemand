@@ -1,0 +1,76 @@
+#!/bin/bash
+
+log_info() {
+    printf "\n\e[0;35m $1\e[0m\n\n"
+}
+
+log_warn() {
+    printf "\e[0;33m $1\e[0m\n"
+}
+
+# starts existing image
+start() {
+    export XDMOD_JOB_PERFORMANCE_IMAGE=$1
+    export MARIADB_IMAGE=$2
+    export COMMAND="start"
+    docker-compose up -d
+}
+
+# builds xdmod with just tables
+build() {
+    export XDMOD_JOB_PERFORMANCE_IMAGE=$1
+    export MARIADB_IMAGE=$2
+    export COMMAND="build"
+    docker-compose up -d
+}
+
+# builds xdmod with test data
+testbuild() {
+    export XDMOD_JOB_PERFORMANCE_IMAGE=$1
+    export MARIADB_IMAGE=$2
+    export COMMAND="testbuild"
+    docker-compose up -d
+}
+
+# stops containers
+stop() {
+    export COMMAND=''
+    docker-compose down
+}
+
+case "$1" in
+    'start')
+        if [[ "$2" ]] && [[ "$3" ]]
+        then
+            start "$2" "$3"
+        else
+            log_info "Usage: $0 { start { xdmod-supremm image | mariadb-supremm image } }"
+            exit 1
+        fi
+        ;;
+    'build')
+        if [[ "$2" ]] && [[ "$3" ]]
+        then
+            build "$2" "$3"
+        else
+            log_info "Usage: $0 { build { xdmod image | mariadb image } }"
+            exit 1
+        fi
+        ;;
+    'testbuild')
+        if [[ "$2" ]] && [[ "$3" ]]
+        then
+            testbuild "$2" "$3"
+        else
+            log_info "Usage: $0 { testbuild { xdmod-supremm build image | mariadb-supremm build image } }"
+            exit 1
+        fi
+        ;;
+    'stop')
+        stop
+        ;;
+    *)
+        log_info "Usage: $0 { start { xdmod-supremm image | mariadb-supremm image } | build { xdmod image | mariadb image } | testbuild { xdmod-supremm build image | mariadb-supremm build image } | stop }"
+        exit 1
+        ;;
+esac

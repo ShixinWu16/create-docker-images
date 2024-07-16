@@ -1,0 +1,7 @@
+FROM mongo:5.0
+
+EXPOSE 27017
+COPY ./my.cnf /etc/mysql/my.cnf
+
+ENV MONGO_INITDB_ROOT_USERNAME=root
+ENV MONGO_INITDB_ROOT_PASSWORD=admin
