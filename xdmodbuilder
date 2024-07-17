@@ -1,0 +1,61 @@
+#!/bin/bash
+
+log_info() {
+    printf "\n\e[0;35m $1\e[0m\n\n"
+}
+
+log_warn() {
+    printf "\e[0;33m $1\e[0m\n"
+}
+
+
+buildxdmod() {
+    rm -f xdmod/.env
+    cp .env xdmod/.env
+    docker-compose build xdmod-base
+    docker-compose build xdmod
+    docker-compose build mariadb
+}
+
+buildondemand() {
+    rm -f xdmod-ondemand/.env
+    cp xdmod/.env xdmod-ondemand/.env
+    export XDMOD_IMAGE=$1
+    docker-compose build xdmod-ondemand
+}
+
+buildsupremm() {
+    rm -f xdmod-job-performance/.env
+    cp xdmod/.env xdmod-job-performance/.env
+    export XDMOD_IMAGE=$1
+    docker-compose build xdmod-job-performance
+    docker-compose build mongodb
+}
+
+case "$1" in
+    'xdmod')
+        buildxdmod
+        ;;
+    'ondemand')
+        if [[ "$2" ]]
+        then
+            buildondemand "$2"
+        else
+            log_info "Usage: $0 { buildondemand { xdmod image } }"
+            exit 1
+        fi
+        ;;
+    'supremm')
+        if [[ "$2" ]]
+        then
+            buildsupremm "$2"
+        else
+            log_info "Usage: $0 { buildsupremm { xdmod image } }"
+            exit 1
+        fi
+        ;;
+    *)
+        log_info "Usage: $0 { xdmod | ondemand { xdmod image } | supremm { xdmod image } }"
+        exit 1
+        ;;
+esac

@@ -18,17 +18,8 @@ start() {
 
 # builds xdmod with just tables
 build() {
-    export XDMOD_JOB_PERFORMANCE_IMAGE=$1
-    export MARIADB_IMAGE=$2
+    export MARIADB_IMAGE=$1
     export COMMAND="build"
-    docker-compose up -d
-}
-
-# builds xdmod with test data
-testbuild() {
-    export XDMOD_JOB_PERFORMANCE_IMAGE=$1
-    export MARIADB_IMAGE=$2
-    export COMMAND="testbuild"
     docker-compose up -d
 }
 
@@ -49,20 +40,11 @@ case "$1" in
         fi
         ;;
     'build')
-        if [[ "$2" ]] && [[ "$3" ]]
+        if [[ "$2" ]]
         then
-            build "$2" "$3"
+            build "$2"
         else
-            log_info "Usage: $0 { build { xdmod image | mariadb image } }"
-            exit 1
-        fi
-        ;;
-    'testbuild')
-        if [[ "$2" ]] && [[ "$3" ]]
-        then
-            testbuild "$2" "$3"
-        else
-            log_info "Usage: $0 { testbuild { xdmod-supremm build image | mariadb-supremm build image } }"
+            log_info "Usage: $0 { build { mariadb image } }"
             exit 1
         fi
         ;;
@@ -70,7 +52,7 @@ case "$1" in
         stop
         ;;
     *)
-        log_info "Usage: $0 { start { xdmod-supremm image | mariadb-supremm image } | build { xdmod image | mariadb image } | testbuild { xdmod-supremm build image | mariadb-supremm build image } | stop }"
+        log_info "Usage: $0 { start { xdmod-supremm image | mariadb-supremm image } | build { mariadb image } | stop }"
         exit 1
         ;;
 esac

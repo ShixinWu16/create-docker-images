@@ -78,13 +78,10 @@ services:
         image: ${MARIADB_IMAGE}
         build:
             dockerfile: mariadb.dockerfile
-        container_name: mariadb
-        hostname: mariadb
         restart: always
+
     mongodb:
         image: ${MONGODB_IMAGE}
         build:
             dockerfile: mongodb.dockerfile
-        container_name: mongodb
-        hostname: mongodb
         restart: always

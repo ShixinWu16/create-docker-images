@@ -1,6 +1,7 @@
 ARG BASE_IMAGE_PLATFORM
 ARG XDMOD_IMAGE
-FROM --platform=${BASE_IMAGE_PLATFORM} tools-int-01.ccr.xdmod.org/xdmod:x86_64-rockylinux8.5-v11.0-1.0-01-testbuild
+FROM --platform=${BASE_IMAGE_PLATFORM} ${XDMOD_IMAGE}
+# tools-int-01.ccr.xdmod.org/xdmod:x86_64-rockylinux8.5-v11.0-1.0-01-testbuild
 
 LABEL description="The XDMoD Job Performance image used in our CI builds or local testing."
 
@@ -51,23 +52,10 @@ RUN composer install
 # cannot but the buildRPM and install RPM in the same layer
 RUN /root/bin/buildrpm xdmod supremm
 
-RUN dnf install -y ~/rpmbuild/RPMS/noarch/xdmod-supremm*.rpm && \
-    chmod +x ~/bin/importmongo.sh
+RUN dnf install -y ~/rpmbuild/RPMS/noarch/xdmod-supremm*.rpm
     # rm -rf /root/xdmod /root/xdmod-supremm
 
-CMD ~/bin/services start && \
-    ~/bin/importmongo.sh && \
-    wget -nv https://raw.githubusercontent.com/ubccr/xdmod-supremm/xdmod11.0/tests/integration/scripts/mongo_auth.mongojs && \
-    mongo mongodb://root:admin@mongodb:27017 mongo_auth.mongojs && \
-    rm -rf mongo_auth.mongojs && \
-    # wget -nv https://github.com/ubccr/xdmod-supremm/blob/xdmod11.0/tests/integration/scripts/xdmod-setup.tcl && \
-    # wget -nv https://raw.githubusercontent.com/ubccr/xdmod-supremm/xdmod11.0/tests/integration/scripts/xdmod-setup.tcl && \
-    wget -nv https://raw.githubusercontent.com/ShixinWu16/xdmod-supremm/dockersplit/tests/integration/scripts/xdmod-setup.tcl && \
-    expect xdmod-setup.tcl | col -b || true && \
-    rm -rf xdmod-setup.tcl && \
-    aggregate_supremm.sh -d && \
-    # rm -rf /root/xdmod-supremm /root/xdmod && \
-    acl-config ; \
-    tail -f /dev/null
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
 WORKDIR /root

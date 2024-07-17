@@ -1,6 +1,8 @@
 services:
   mongodb:
-    image: mongo:5.0
+    image: ${MONGODB_IMAGE}
+    container_name: mongodb
+    hostname: mongodb
     healthcheck:
       test: [ "CMD", "mongo", "--username", "root", "--password", "admin", "--eval", "db.adminCommand('ping')" ]
       interval: 10s
@@ -11,6 +13,8 @@ services:
 
   mariadb:
     image: ${MARIADB_IMAGE}
+    container_name: mariadb
+    hostname: mariadb
     healthcheck:
       test: [ "CMD", "/usr/local/bin/healthcheck.sh", "--connect", "--innodb_initialized",  "--datadir", "/var/lib/db" ]
       interval: 10s
@@ -23,6 +27,7 @@ services:
     image: ${XDMOD_JOB_PERFORMANCE_IMAGE}
     container_name: xdmod
     hostname: xdmod
+    command: ${COMMAND}
     links:
       - mongodb
     depends_on:

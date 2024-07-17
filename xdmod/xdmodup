@@ -10,24 +10,85 @@ log_warn() {
 
 # starts exisiting image
 start() {
-    export XDMOD_IMAGE=$1
-    export MARIADB_IMAGE=$2
+    source .env
+    export XDMOD_IMAGE=${XDMOD_BUILD}
+    export MARIADB_IMAGE=${MARIADB_BUILD}
     export COMMAND="start"
     docker-compose up -d
 }
 
 # builds xdmod with just tables
 build() {
+    source .env
     export COMMAND="build"
     docker-compose up -d
+    dots="."
+      while ! curl --insecure --output /dev/null --silent --head --fail "https://localhost";
+      do
+        echo -ne "waiting for server to be up $dots\033[0K\r"
+        sleep 1s
+        dots="$dots."
+        if [ ${#dots} -gt 3 ]; then
+            dots="."
+        fi
+      done
+      echo -e "\nServer is up!"
+    echo committing mariadb
+    docker commit mariadb "${MARIADB_IMAGE}"-build
+    echo commited mariadb image
+    if grep -q '^MARIADB_BUILD=' .env;
+    then
+      sed -i~ '/^MARIADB_BUILD=/s/=.*/=${MARIADB_IMAGE}-build/' .env
+    else
+      echo "MARIADB_BUILD=${MARIADB_IMAGE}-build" >> .env
+    fi
+    echo committing xdmod
+    docker commit xdmod ${XDMOD_IMAGE}-build
+    echo commited xdmod image
+    if grep -q '^XDMOD_BUILD=' .env;
+    then
+      sed -i~ '/^XDMOD_BUILD=/s/=.*/=${XDMOD_IMAGE}-build/' .env
+    else
+      echo "XDMOD_BUILD=${XDMOD_IMAGE}-build" >> .env
+    fi
 }
 
 # builds xdmod with test data
 testbuild() {
-    export XDMOD_IMAGE=$1
-    export MARIADB_IMAGE=$2
+    source .env
+    export XDMOD_IMAGE=${XDMOD_BUILD}
+    export MARIADB_IMAGE=${MARIADB_BUILD}
     export COMMAND="testbuild"
     docker-compose up -d
+    dots="."
+    while ! curl --insecure --output /dev/null --silent --head --fail "https://localhost";
+    do
+      echo -ne "waiting for server to be up $dots\033[0K\r"
+      sleep 1s
+      dots="$dots."
+      if [ ${#dots} -gt 3 ]; then
+          dots="."
+      fi
+    done
+    echo -e "\nServer is up!"
+    echo committing mariadb
+    docker commit mariadb "${MARIADB_IMAGE}"-test
+    echo commited mariadb image
+    if grep -q '^MARIADB_TESTBUILD=' .env;
+    then
+      sed -i~ '/^MARIADB_TESTBUILD=/s/=.*/=${MARIADB_IMAGE}-test/' .env
+    else
+      echo "MARIADB_TESTBUILD=${MARIADB_IMAGE}-test" >> .env
+    fi
+    echo committing xdmod
+    docker commit xdmod ${XDMOD_IMAGE}-test
+    echo commited xdmod image
+    if grep -q '^XDMOD_TESTBUILD=' .env;
+    then
+      sed -i~ '/^XDMOD_TESTBUILD=/s/=.*/=${XDMOD_IMAGE}-test/' .env
+    else
+      echo "XDMOD_TESTBUILD=${XDMOD_IMAGE}-test" >> .env
+    fi
 }
 
 # stops containers
@@ -38,11 +99,11 @@ stop() {
 
 case "$1" in
     'start')
-        if [[ "$2" ]] && [[ "$3" ]]
+        if grep -q '^MARIADB_BUILD=' .env;
         then
-            start "$2" "$3"
+            start
         else
-            log_info "Usage: $0 { start {xdmod image | mariadb image} }"
+            log_info "Usage: $0 { start { build first } }"
             exit 1
         fi
         ;;
@@ -50,11 +111,11 @@ case "$1" in
         build
         ;;
     'testbuild')
-        if [[ "$2" ]] && [[ "$3" ]]
+        if grep -q '^MARIADB_BUILD=' .env;
         then
             testbuild "$2" "$3"
         else
-            log_info "Usage: $0 { testbuild {xdmod image | mariadb image} }"
+            log_info "Usage: $0 { build first } }"
             exit 1
         fi
         ;;
@@ -62,7 +123,7 @@ case "$1" in
         stop
         ;;
     *)
-        log_info "Usage: $0 { start {xdmod image | mariadb image} | build | testbuild { xdmod image }| stop }"
+        log_info "Usage: $0 { start { build first } | build | testbuild { build first } | stop }"
         exit 1
         ;;
 esac
