@@ -17,6 +17,14 @@ start() {
     docker-compose up -d
 }
 
+starttest() {
+    source .env
+    export XDMOD_IMAGE=${XDMOD_TESTBUILD}
+    export MARIADB_IMAGE=${MARIADB_TESTBUILD}
+    export COMMAND="start"
+    docker-compose up -d
+}
+
 # builds xdmod with just tables
 build() {
     source .env
@@ -107,6 +115,15 @@ case "$1" in
             exit 1
         fi
         ;;
+    'starttest')
+            if grep -q '^MARIADB_TESTBUILD=' .env;
+            then
+                start
+            else
+                log_info "Usage: $0 { starttest { build testbuild first } }"
+                exit 1
+            fi
+            ;;
     'build')
         build
         ;;
@@ -123,7 +140,7 @@ case "$1" in
         stop
         ;;
     *)
-        log_info "Usage: $0 { start { build first } | build | testbuild { build first } | stop }"
+        log_info "Usage: $0 { start { build first } | starttest { build testbuild first } | build | testbuild { build first } | stop }"
         exit 1
         ;;
 esac
