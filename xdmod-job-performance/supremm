@@ -10,17 +10,92 @@ log_warn() {
 
 # starts existing image
 start() {
-    export XDMOD_JOB_PERFORMANCE_IMAGE=$1
-    export MARIADB_IMAGE=$2
+    source .env
+    export XDMOD_JOB_PERFORMANCE_IMAGE=XDMOD_BUILD
+    export MARIADB_IMAGE=MARIADB_BUILD
     export COMMAND="start"
     docker-compose up -d
 }
 
-# builds xdmod with just tables
+starttest() {
+    source .env
+    export XDMOD_JOB_PERFORMANCE_IMAGE=${XDMOD_TESTBUILD}
+    export MARIADB_IMAGE=${MARIADB_TESTBUILD}
+    export COMMAND="start"
+    docker-compose up -d
+}
+
+
 build() {
-    export MARIADB_IMAGE=$1
+    source .env
+    export MARIADB_IMAGE=${MARIADB_BUILD}
     export COMMAND="build"
     docker-compose up -d
+    dots="."
+    while ! curl --insecure --output /dev/null --silent --head --fail "https://localhost";
+    do
+      echo -ne "waiting for server to be up $dots\033[0K\r"
+      sleep 1s
+      dots="$dots."
+      if [ ${#dots} -gt 3 ]; then
+          dots="."
+      fi
+    done
+    echo -e "\nServer is up!"
+    echo committing mariadb
+    docker commit mariadb "${MARIADB_IMAGE}"-build-supremm
+    echo commited mariadb image
+    if grep -q '^SUPREMM_MARIADB_BUILD=' .env;
+    then
+      sed -i~ '/^SUPREMM_MARIADB_BUILD=/s/=.*/=${MARIADB_IMAGE}-build-supremm/' .env
+    else
+      echo "SUPREMM_MARIADB_BUILD=${MARIADB_IMAGE}-build-supremm" >> .env
+    fi
+    echo committing xdmod
+    docker commit xdmod ${XDMOD_JOB_PERFORMANCE_IMAGE}-build
+    echo commited xdmod image
+    if grep -q '^SUPREMM_BUILD=' .env;
+    then
+      sed -i~ '/^SUPREMM_BUILD=/s/=.*/=${XDMOD_JOB_PERFORMANCE_IMAGE}-build/' .env
+    else
+      echo "SUPREMM_BUILD=${XDMOD_JOB_PERFORMANCE_IMAGE}-build" >> .env
+    fi
+}
+
+testbuild() {
+    source .env
+    export MARIADB_IMAGE=${MARIADB_TESTBUILD}
+    export COMMAND="build"
+    docker-compose up -d
+    dots="."
+    while ! curl --insecure --output /dev/null --silent --head --fail "https://localhost";
+    do
+      echo -ne "waiting for server to be up $dots\033[0K\r"
+      sleep 1s
+      dots="$dots."
+      if [ ${#dots} -gt 3 ]; then
+          dots="."
+      fi
+    done
+    echo -e "\nServer is up!"
+    echo committing mariadb
+    docker commit mariadb "${MARIADB_IMAGE}"-test-supremm
+    echo commited mariadb image
+    if grep -q '^SUPREMM_MARIADB_TESTBUILD=' .env;
+    then
+      sed -i~ '/^SUPREMM_MARIADB_TESTBUILD=/s/=.*/=${MARIADB_IMAGE}-test-supremm/' .env
+    else
+      echo "SUPREMM_MARIADB_TESTBUILD=${MARIADB_IMAGE}-test-supremm" >> .env
+    fi
+    echo committing xdmod
+    docker commit xdmod ${XDMOD_JOB_PERFORMANCE_IMAGE}-test
+    echo commited xdmod image
+    if grep -q '^SUPREMM_TESTBUILD=' .env;
+    then
+      sed -i~ '/^SUPREMM_TESTBUILD=/s/=.*/=${XDMOD_JOB_PERFORMANCE_IMAGE}-test/' .env
+    else
+      echo "SUPREMM_TESTBUILD=${XDMOD_JOB_PERFORMANCE_IMAGE}-test" >> .env
+    fi
 }
 
 # stops containers
@@ -31,28 +106,22 @@ stop() {
 
 case "$1" in
     'start')
-        if [[ "$2" ]] && [[ "$3" ]]
-        then
-            start "$2" "$3"
-        else
-            log_info "Usage: $0 { start { xdmod-supremm image | mariadb-supremm image } }"
-            exit 1
-        fi
+        start
+        ;;
+    'starttest')
+        starttest
         ;;
     'build')
-        if [[ "$2" ]]
-        then
-            build "$2"
-        else
-            log_info "Usage: $0 { build { mariadb image } }"
-            exit 1
-        fi
+        build
+        ;;
+    'testbuild')
+        testbuild
         ;;
     'stop')
         stop
         ;;
     *)
-        log_info "Usage: $0 { start { xdmod-supremm image | mariadb-supremm image } | build { mariadb image } | stop }"
+        log_info "Usage: $0 { start | starttest | build | testbuild | stop }"
         exit 1
         ;;
 esac
