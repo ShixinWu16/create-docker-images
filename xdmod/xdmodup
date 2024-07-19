@@ -59,6 +59,8 @@ build() {
     else
       echo "XDMOD_BUILD=${XDMOD_IMAGE}-build" >> .env
     fi
+    rm -f ../.env
+    cp .env ../.env
 }
 
 # builds xdmod with test data
@@ -80,23 +82,25 @@ testbuild() {
     done
     echo -e "\nServer is up!"
     echo committing mariadb
-    docker commit mariadb "${MARIADB_IMAGE}"-test
+    docker commit mariadb "${MARIADB_BUILD}"-test
     echo commited mariadb image
     if grep -q '^MARIADB_TESTBUILD=' .env;
     then
-      sed -i~ '/^MARIADB_TESTBUILD=/s/=.*/=${MARIADB_IMAGE}-test/' .env
+      sed -i~ '/^MARIADB_TESTBUILD=/s/=.*/=${MARIADB_BUILD}-test/' .env
     else
-      echo "MARIADB_TESTBUILD=${MARIADB_IMAGE}-test" >> .env
+      echo "MARIADB_TESTBUILD=${MARIADB_BUILD}-test" >> .env
     fi
     echo committing xdmod
-    docker commit xdmod ${XDMOD_IMAGE}-test
+    docker commit xdmod ${XDMOD_BUILD}-test
     echo commited xdmod image
     if grep -q '^XDMOD_TESTBUILD=' .env;
     then
-      sed -i~ '/^XDMOD_TESTBUILD=/s/=.*/=${XDMOD_IMAGE}-test/' .env
+      sed -i~ '/^XDMOD_TESTBUILD=/s/=.*/=${XDMOD_BUILD}-test/' .env
     else
-      echo "XDMOD_TESTBUILD=${XDMOD_IMAGE}-test" >> .env
+      echo "XDMOD_TESTBUILD=${XDMOD_BUILD}-test" >> .env
     fi
+    rm -f ../.env
+    cp .env ../.env
 }
 
 # stops containers
@@ -116,21 +120,21 @@ case "$1" in
         fi
         ;;
     'starttest')
-            if grep -q '^MARIADB_TESTBUILD=' .env;
-            then
-                start
-            else
-                log_info "Usage: $0 { starttest { build testbuild first } }"
-                exit 1
-            fi
-            ;;
+        if grep -q '^MARIADB_TESTBUILD=' .env;
+        then
+            starttest
+        else
+            log_info "Usage: $0 { starttest { build testbuild first } }"
+            exit 1
+        fi
+        ;;
     'build')
         build
         ;;
     'testbuild')
         if grep -q '^MARIADB_BUILD=' .env;
         then
-            testbuild "$2" "$3"
+            testbuild
         else
             log_info "Usage: $0 { build first } }"
             exit 1
