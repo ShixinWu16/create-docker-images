@@ -28,6 +28,8 @@ RUN git clone -b main --depth=1 https://github.com/ShixinWu16/xdmod-ondemand /ro
     git clone -b xdmod11.0 --depth=1 https://github.com/ShixinWu16/xdmod /root/xdmod && \
     ln -s ~/xdmod-ondemand/ ~/xdmod/open_xdmod/modules/ondemand
 
+COPY entrypoint.sh /root/xdmod-ondemand/tests/scripts/entrypoint.sh
+
 WORKDIR /root/xdmod
 
 RUN composer install
@@ -40,12 +42,6 @@ RUN /root/bin/buildrpm xdmod ondemand
 
 # RUN wget -nv -O /root/xdmod-ondemand/tests/scripts/bootstrap.sh https://raw.githubusercontent.com/aaronweeden/xdmod-ondemand/use-new-docker-container/tests/scripts/bootstrap.sh
 RUN dnf install -y ~/rpmbuild/RPMS/noarch/xdmod*.rpm
-
-RUN chmod +x /root/xdmod-ondemand/tests/scripts/bootstrap.sh
-CMD ~/bin/services start && \
-     /root/xdmod-ondemand/tests/scripts/bootstrap.sh && \
-     rm -rf /root/xdmod /root/xdmod-ondemand && \
-     ~/bin/services stop && \
-     tail -f /dev/null
+ENTRYPOINT [ "/root/xdmod-ondemand/tests/scripts/entrypoint.sh" ]
 
 WORKDIR /root
