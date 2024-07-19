@@ -4,6 +4,7 @@ services:
       mariadb:
         condition: service_healthy
     image: ${XDMOD_ONDEMAND_IMAGE}
+    command: ${COMMAND}
     container_name: xdmod
     hostname: xdmod
     ports:
@@ -12,7 +13,7 @@ services:
       xdmod_default: {}
 
   mariadb:
-    image: ${MARIADB_IMAGE}
+    image: ${MARIADB_TESTBUILD}
     container_name: mariadb
     hostname: mariadb
     restart: always
