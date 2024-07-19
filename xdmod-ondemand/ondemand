@@ -10,17 +10,84 @@ log_warn() {
 
 # starts existing image
 start() {
-    export XDMOD_ONDEMAND_IMAGE=$1
-    export MARIADB_IMAGE=$2
+    source .env
+    export XDMOD_ONDEMAND_IMAGE=${ONDEMAND_MARIADB_BUILD}
+    export MARIADB_IMAGE=${ONDEMAND_MARIADB_BUILD}
     export COMMAND="start"
     docker-compose up -d
 }
 
 
 build() {
-    export MARIADB_IMAGE=$1
+    source .env
+    export MARIADB_IMAGE=${MARIADB_BUILD}
     export COMMAND="build"
     docker-compose up -d
+    dots="."
+    while ! curl --insecure --output /dev/null --silent --head --fail "https://localhost";
+    do
+      echo -ne "waiting for server to be up $dots\033[0K\r"
+      sleep 1s
+      dots="$dots."
+      if [ ${#dots} -gt 3 ]; then
+          dots="."
+      fi
+    done
+    echo -e "\nServer is up!"
+    echo committing mariadb
+    docker commit mariadb "${MARIADB_IMAGE}"-build-ondemand
+    echo commited mariadb image
+      if grep -q '^ONDEMAND_MARIADB_BUILD=' .env;
+      then
+        sed -i~ '/^ONDEMAND_MARIADB_BUILD=/s/=.*/=${MARIADB_IMAGE}-build-ondemand/' .env
+      else
+        echo "ONDEMAND_MARIADB_BUILD=${MARIADB_IMAGE}-build-ondemand" >> .env
+      fi
+      echo committing xdmod
+      docker commit xdmod ${XDMOD_ONDEMAND_IMAGE}-build-ondemand
+      echo commited xdmod image
+      if grep -q '^ONDEMAND_BUILD=' .env;
+      then
+        sed -i~ '/^ONDEMAND_BUILD=/s/=.*/=${XDMOD_ONDEMAND_IMAGE}-build-ondemand/' .env
+      else
+        echo "ONDEMAND_BUILD=${XDMOD_ONDEMAND_IMAGE}-build-ondemand" >> .env
+      fi
+}
+
+testbuild() {
+    source .env
+    export MARIADB_IMAGE=${MARIADB_TESTBUILD}
+    export COMMAND="testbuild"
+    docker-compose up -d
+    dots="."
+    while ! curl --insecure --output /dev/null --silent --head --fail "https://localhost";
+    do
+      echo -ne "waiting for server to be up $dots\033[0K\r"
+      sleep 1s
+      dots="$dots."
+      if [ ${#dots} -gt 3 ]; then
+          dots="."
+      fi
+    done
+    echo -e "\nServer is up!"
+    echo committing mariadb
+    docker commit mariadb "${MARIADB_IMAGE}"-test-ondemand
+    echo commited mariadb image
+    if grep -q '^ONDEMAND_MARIADB_TESTBUILD=' .env;
+    then
+      sed -i~ '/^ONDEMAND_MARIADB_TESTBUILD=/s/=.*/=${MARIADB_IMAGE}-test-ondemand/' .env
+    else
+      echo "ONDEMAND_MARIADB_TESTBUILD=${MARIADB_IMAGE}-test-ondemand" >> .env
+    fi
+    echo committing xdmod
+    docker commit xdmod ${XDMOD_ONDEMAND_IMAGE}-test-ondemand
+    echo commited xdmod image
+    if grep -q '^ONDEMAND_TESTBUILD=' .env;
+    then
+      sed -i~ '/^ONDEMAND_TESTBUILD=/s/=.*/=${XDMOD_ONDEMAND_IMAGE}-test-ondemand/' .env
+    else
+      echo "ONDEMAND_TESTBUILD=${XDMOD_ONDEMAND_IMAGE}-test-ondemand" >> .env
+    fi
 }
 
 # stops containers
@@ -31,28 +98,19 @@ stop() {
 
 case "$1" in
     'start')
-        if [[ "$2" ]] && [[ "$3" ]]
-        then
-            start "$2" "$3"
-        else
-            log_info "Usage: $0 { start { xdmod-ondemand image | mariadb-ondemand image } }"
-            exit 1
-        fi
+        start
         ;;
     'build')
-        if [[ "$2" ]]
-        then
-            build "$2"
-        else
-            log_info "Usage: $0 { build { mariadb image } }"
-            exit 1
-        fi
+        build
+        ;;
+    'testbuild')
+        testbuild
         ;;
     'stop')
         stop
         ;;
     *)
-        log_info "Usage: $0 { start { xdmod-supremm image | mariadb-supremm image } | build { mariadb image } | stop }"
+        log_info "Usage: $0 { start | build | testbuild | stop }"
         exit 1
         ;;
 esac
