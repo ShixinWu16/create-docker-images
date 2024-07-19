@@ -20,42 +20,89 @@ buildxdmod() {
 buildondemand() {
     rm -f xdmod-ondemand/.env
     cp xdmod/.env xdmod-ondemand/.env
-    export XDMOD_IMAGE=$1
+    source xdmod-ondemand/.env
+    export XDMOD_IMAGE=${XDMOD_BUILD}
+    docker-compose build xdmod-ondemand
+}
+
+buildtestondemand() {
+    rm -f xdmod-ondemand/.env
+    cp xdmod/.env xdmod-ondemand/.env
+    source xdmod-ondemand/.env
+    export XDMOD_IMAGE=${XDMOD_TESTBUILD}
     docker-compose build xdmod-ondemand
 }
 
 buildsupremm() {
     rm -f xdmod-job-performance/.env
     cp xdmod/.env xdmod-job-performance/.env
-    export XDMOD_IMAGE=$1
+    source xdmod-job-performance/.env
+    export XDMOD_IMAGE=${XDMOD_BUILD}
     docker-compose build xdmod-job-performance
     docker-compose build mongodb
 }
+
+buildtestsupremm() {
+    rm -f xdmod-job-performance/.env
+    cp xdmod/.env xdmod-job-performance/.env
+    source xdmod-job-performance/.env
+    export XDMOD_IMAGE=${XDMOD_TESTBUILD}
+    docker-compose build xdmod-job-performance
+    docker-compose build mongodb
+}
+
+resetenv() {
+    rm -f .env
+    wget https://raw.githubusercontent.com/ShixinWu16/create-docker-images/main/.env
+}
+
 
 case "$1" in
     'xdmod')
         buildxdmod
         ;;
     'ondemand')
-        if [[ "$2" ]]
+        if grep -q '^XDMOD_BUILD=' .env;
         then
-            buildondemand "$2"
+            buildondemand
         else
-            log_info "Usage: $0 { buildondemand { xdmod image } }"
+            log_info "Usage: $0 { buildondemand { Finish all of xdmod's builds first } }"
             exit 1
         fi
         ;;
     'supremm')
-        if [[ "$2" ]]
+        if grep -q '^XDMOD_BUILD=' .env;
         then
-            buildsupremm "$2"
+            buildsupremm
         else
-            log_info "Usage: $0 { buildsupremm { xdmod image } }"
+            log_info "Usage: $0 { buildsupremm { Finish all of xdmod's builds first } }"
             exit 1
         fi
         ;;
-    *)
-        log_info "Usage: $0 { xdmod | ondemand { xdmod image } | supremm { xdmod image } }"
+    'testondemand')
+        if grep -q '^XDMOD_TESTBUILD=' .env;
+        then
+            buildtestondemand
+        else
+            log_info "Usage: $0 { buildondemand { Finish all of xdmod's builds first } }"
+            exit 1
+        fi
+        ;;
+    'testsupremm')
+        if grep -q '^XDMOD_TESTBUILD=' .env;
+        then
+            buildtestsupremm
+        else
+            log_info "Usage: $0 { Finish all of xdmod's builds first }"
+            exit 1
+        fi
+        ;;
+
+      'resetenv')
+          resetenv
+          ;;
+      *)
+        log_info "Usage: $0 { xdmod | testondemand | ondemand | testsupremm | supremm | resetenv }"
         exit 1
         ;;
 esac
