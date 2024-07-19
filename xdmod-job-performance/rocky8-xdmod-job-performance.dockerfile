@@ -49,11 +49,10 @@ WORKDIR /root/xdmod
 
 RUN composer install
 
-# cannot but the buildRPM and install RPM in the same layer
+
 RUN /root/bin/buildrpm xdmod supremm
 
 RUN dnf install -y ~/rpmbuild/RPMS/noarch/xdmod-supremm*.rpm
-    # rm -rf /root/xdmod /root/xdmod-supremm
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
