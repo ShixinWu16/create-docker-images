@@ -1,0 +1,74 @@
+#!/bin/bash
+
+log_info() {
+    printf "\n\e[0;35m $1\e[0m\n\n"
+}
+
+
+log_warn() {
+    printf "\e[0;33m $1\e[0m\n"
+}
+
+
+buildxdmod() {
+    ./xdmodbuilder xdmod
+    cd xdmod
+    ./xdmodup build
+}
+
+
+buildtestxdmod() {
+    ./xdmodbuilder xdmod
+    cd xdmod
+    ./xdmodup build
+    ./xdmodup stop
+    ./xdmodup testbuild
+}
+
+
+buildondemand() {
+  ./xdmodbuilder xdmod
+  cd xdmod
+  ./xdmodup build
+  ./xdmodup stop
+  cd ..
+  ./xdmodbuilder ondemand
+  cd xdmod-ondemand
+  ./ondemand build
+}
+
+
+testbuildondemand() {
+  ./xdmodbuilder xdmod
+  # shellcheck disable=SC2164
+  cd xdmod
+  ./xdmodup build
+  ./xdmodup stop
+  ./xdmodup testbuild
+  ./xdmodup stop
+  cd ..
+  ./xdmodbuilder testondemand
+  cd xdmod-ondemand
+  ./ondemand testbuild
+}
+
+
+
+case "$1" in
+    'xdmod')
+        buildxdmod
+        ;;
+    'testxdmod')
+        buildtestxdmod
+        ;;
+    'ondemand')
+        buildondemand
+        ;;
+    'testondemand')
+        testbuildondemand
+        ;;
+        *)
+        log_info "Usage: $0 { xdmod | testxdmod | testondemand | ondemand | testsupremm | supremm | resetenv }"
+        exit 1
+        ;;
+esac

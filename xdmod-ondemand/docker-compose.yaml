@@ -13,7 +13,7 @@ services:
       xdmod_default: {}
 
   mariadb:
-    image: ${MARIADB_TESTBUILD}
+    image: ${MARIADB_IMAGE}
     container_name: mariadb
     hostname: mariadb
     restart: always
