@@ -11,8 +11,8 @@ log_warn() {
 # starts existing image
 start() {
     source .env
-    export XDMOD_JOB_PERFORMANCE_IMAGE=XDMOD_BUILD
-    export MARIADB_IMAGE=MARIADB_BUILD
+    export XDMOD_JOB_PERFORMANCE_IMAGE=${XDMOD_BUILD}
+    export MARIADB_IMAGE=${MARIADB_BUILD}
     export COMMAND="start"
     docker-compose up -d
 }
