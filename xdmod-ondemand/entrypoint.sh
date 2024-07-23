@@ -8,6 +8,7 @@ then
     BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
     LOGPATH=/tmp/ondemand
     XDMOD_SRC_DIR=${XDMOD_SRC_DIR:-$BASEDIR/../../../xdmod}
+
     # Run the interactive setup to add a new resource and setup the database.
     expect $BASEDIR/setup.tcl | col -b
 
@@ -16,8 +17,11 @@ then
 
     mkdir $LOGPATH
     cp $BASEDIR/../artifacts/*.log $LOGPATH
-
     sudo -u xdmod xdmod-ondemand-ingestor -d $LOGPATH -r styx --debug
+
+    rm -rf /root/xdmod-ondemand /root/xdmod /var/cache/dnf /root/rpmbuild
+    dnf clean all
+
     /usr/sbin/postfix start
     php-fpm
     rm -f /var/run/httpd/httpd.pid
@@ -26,9 +30,13 @@ fi
 
 if [ "$1" = "build" ];
 then
-    BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
     # Run the interactive setup to add a new resource and setup the database.
+    BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
     expect $BASEDIR/setup.tcl | col -b
+
+    rm -rf /root/xdmod-ondemand /root/xdmod /var/cache/dnf /root/rpmbuild
+    dnf clean all
+
     /usr/sbin/postfix start
     php-fpm
     rm -f /var/run/httpd/httpd.pid
