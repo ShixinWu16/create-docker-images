@@ -52,6 +52,34 @@ testbuildondemand() {
   ./ondemand testbuild
 }
 
+supremm() {
+  ./xdmodbuilder xdmod
+  # shellcheck disable=SC2164
+  cd xdmod
+  ./xdmodup build
+  ./xdmodup stop
+  cd ..
+  ./xdmodbuilder supremm
+  cd xdmod-job-performance
+  ./supremm build
+}
+
+
+testsupremm() {
+  ./xdmodbuilder xdmod
+  # shellcheck disable=SC2164
+  cd xdmod
+  ./xdmodup build
+  ./xdmodup stop
+  ./xdmodup testbuild
+  ./xdmodup stop
+  cd ..
+  ./xdmodbuilder testsupremm
+  cd xdmod-job-performance
+  ./supremm testbuild
+}
+
+
 
 
 case "$1" in
@@ -67,8 +95,14 @@ case "$1" in
     'testondemand')
         testbuildondemand
         ;;
+    'supremm')
+        supremm
+        ;;
+    'testsupremm')
+        testsupremm
+        ;;
         *)
-        log_info "Usage: $0 { xdmod | testxdmod | testondemand | ondemand | testsupremm | supremm | resetenv }"
+        log_info "Usage: $0 { xdmod | testxdmod | testondemand | ondemand | testsupremm | supremm }"
         exit 1
         ;;
 esac
