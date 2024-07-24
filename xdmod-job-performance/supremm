@@ -65,7 +65,7 @@ build() {
 testbuild() {
     source .env
     export MARIADB_IMAGE=${MARIADB_TESTBUILD}
-    export COMMAND="build"
+    export COMMAND="testbuild"
     docker-compose up -d
     dots="."
     while ! curl --insecure --output /dev/null --silent --head --fail "https://localhost";
