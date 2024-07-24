@@ -1,7 +1,6 @@
 ARG BASE_IMAGE_PLATFORM
 ARG XDMOD_IMAGE
 FROM --platform=${BASE_IMAGE_PLATFORM} ${XDMOD_IMAGE}
-# tools-int-01.ccr.xdmod.org/xdmod:x86_64-rockylinux8.5-v11.0-1.0-01-testbuild
 
 LABEL description="The XDMoD Job Performance image used in our CI builds or local testing."
 
@@ -18,7 +17,6 @@ COPY assets/mongodb-org-${BASE_IMAGE_ARCHITECTURE}.repo /etc/yum.repos.d
 RUN dnf install -y mongodb-org
 
 # RUN dnf install -y https://github.com/ubccr/xdmod-supremm/releases/download/${XDMOD_SUPREMM_GITHUB_TAG}/${XDMOD_SUPREMM_RPM}
-
 
 RUN dnf clean all
 RUN rm -rf /var/cache/dnf

@@ -26,14 +26,14 @@ build() {
     dots="."
     while ! curl --insecure --output /dev/null --silent --head --fail "https://localhost";
     do
-      echo -ne "waiting for server to be up $dots\033[0K\r"
+      echo -ne "waiting for ondemand to be setup $dots\033[0K\r"
       sleep 1s
       dots="$dots."
       if [ ${#dots} -gt 3 ]; then
           dots="."
       fi
     done
-    echo -e "\nServer is up!"
+    echo -e "\ondemand is up!"
     echo committing mariadb
     docker commit mariadb "${MARIADB_IMAGE}"-build-ondemand
     echo commited mariadb image
@@ -62,14 +62,14 @@ testbuild() {
     dots="."
     while ! curl --insecure --output /dev/null --silent --head --fail "https://localhost";
     do
-      echo -ne "waiting for server to be up $dots\033[0K\r"
+      echo -ne "waiting for Test ondemand to be setup $dots\033[0K\r"
       sleep 1s
       dots="$dots."
       if [ ${#dots} -gt 3 ]; then
           dots="."
       fi
     done
-    echo -e "\nServer is up!"
+    echo -e "\Test ondemand is up!"
     echo committing mariadb
     docker commit mariadb "${MARIADB_IMAGE}"-test-ondemand
     echo commited mariadb image

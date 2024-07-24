@@ -34,14 +34,14 @@ build() {
     dots="."
     while ! curl --insecure --output /dev/null --silent --head --fail "https://localhost";
     do
-      echo -ne "waiting for server to be up $dots\033[0K\r"
+      echo -ne "waiting for supremm to be setup $dots\033[0K\r"
       sleep 1s
       dots="$dots."
       if [ ${#dots} -gt 3 ]; then
           dots="."
       fi
     done
-    echo -e "\nServer is up!"
+    echo -e "\supremm is up!"
     echo committing mariadb
     docker commit mariadb "${MARIADB_IMAGE}"-build-supremm
     echo commited mariadb image
@@ -70,14 +70,14 @@ testbuild() {
     dots="."
     while ! curl --insecure --output /dev/null --silent --head --fail "https://localhost";
     do
-      echo -ne "waiting for server to be up $dots\033[0K\r"
+      echo -ne "waiting for Test supremm to be setup $dots\033[0K\r"
       sleep 1s
       dots="$dots."
       if [ ${#dots} -gt 3 ]; then
           dots="."
       fi
     done
-    echo -e "\nServer is up!"
+    echo -e "\nTest supremm created!"
     echo committing mariadb
     docker commit mariadb "${MARIADB_IMAGE}"-test-supremm
     echo commited mariadb image
