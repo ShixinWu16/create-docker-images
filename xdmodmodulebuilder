@@ -40,7 +40,6 @@ buildondemand() {
 
 testbuildondemand() {
   ./xdmodbuilder xdmod
-  # shellcheck disable=SC2164
   cd xdmod
   ./xdmodup build
   ./xdmodup stop
