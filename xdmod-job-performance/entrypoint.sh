@@ -3,8 +3,6 @@
 set -e
 set -o pipefail
 
-tail
-
 if [ "$1" = "build" ]
 then
   dnf install -y ~/rpmbuild/RPMS/noarch/xdmod-supremm*.rpm
@@ -17,7 +15,7 @@ then
   wget -nv https://raw.githubusercontent.com/ShixinWu16/xdmod-supremm/dockersplit/tests/integration/scripts/xdmod-setup.tcl
   expect xdmod-setup.tcl | col -b || true
   rm -rf xdmod-setup.tcl
-  rm -rf /root/xdmod-supremm /root/xdmod
+  rm -rf /root/xdmod-supremm /root/xdmod /root/rpmbuild
   acl-config
   /usr/sbin/postfix start
   php-fpm
@@ -38,7 +36,7 @@ then
   expect xdmod-setup.tcl | col -b || true
   rm -rf xdmod-setup.tcl
   aggregate_supremm.sh
-  rm -rf /root/xdmod-supremm /root/xdmod
+  rm -rf /root/xdmod-supremm /root/xdmod /root/rpmbuild
   acl-config
   /usr/sbin/postfix start
   php-fpm
