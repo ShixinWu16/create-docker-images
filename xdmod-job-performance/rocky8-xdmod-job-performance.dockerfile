@@ -36,7 +36,6 @@ RUN sed -i 's/^#nojournal = true/nojournal = true/; s/^#noprealloc = true/noprea
 # RUN git clone -b xdmod11.0 https://github.com/ubccr/xdmod-supremm.git
 
 RUN git clone -b dockersplit --depth=1 https://github.com/ShixinWu16/xdmod-supremm.git /root/xdmod-supremm && \
-    git clone -b xdmod11.0 --depth=1 https://github.com/ShixinWu16/xdmod /root/xdmod && \
     ln -s ~/xdmod-supremm/ ~/xdmod/open_xdmod/modules/supremm
 
 WORKDIR /root/xdmod-supremm
