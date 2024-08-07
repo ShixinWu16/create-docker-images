@@ -14,6 +14,7 @@ buildxdmod() {
     ./xdmodbuilder xdmod
     cd xdmod
     ./xdmodup build
+    cp .env ../.env
 }
 
 
@@ -23,6 +24,7 @@ buildtestxdmod() {
     ./xdmodup build
     ./xdmodup stop
     ./xdmodup testbuild
+    cp .env ../.env
 }
 
 
@@ -35,6 +37,7 @@ buildondemand() {
   ./xdmodbuilder ondemand
   cd xdmod-ondemand
   ./ondemand build
+  cp .env ../xdmod/.env
 }
 
 
@@ -49,11 +52,11 @@ testbuildondemand() {
   ./xdmodbuilder testondemand
   cd xdmod-ondemand
   ./ondemand testbuild
+  cp .env ../xdmod/.env
 }
 
 supremm() {
   ./xdmodbuilder xdmod
-  # shellcheck disable=SC2164
   cd xdmod
   ./xdmodup build
   ./xdmodup stop
@@ -61,6 +64,7 @@ supremm() {
   ./xdmodbuilder supremm
   cd xdmod-job-performance
   ./supremm build
+  cp .env ../xdmod/.env
 }
 
 
@@ -75,8 +79,14 @@ testsupremm() {
   ./xdmodbuilder testsupremm
   cd xdmod-job-performance
   ./supremm testbuild
+  cp .env ../xdmod/.env
 }
 
+
+resetenv() {
+  rm -f .env
+  wget https://raw.githubusercontent.com/ShixinWu16/create-docker-images/xdmodupdate/.env
+}
 
 case "$1" in
     'xdmod')
@@ -97,8 +107,11 @@ case "$1" in
     'testsupremm')
         testsupremm
         ;;
+    'resetenv')
+        resetenv
+        ;;
         *)
-        log_info "Usage: $0 { xdmod | testxdmod | testondemand | ondemand | testsupremm | supremm }"
+        log_info "Usage: $0 { xdmod | testxdmod | testondemand | ondemand | testsupremm | supremm | resetenv }"
         exit 1
         ;;
 esac
