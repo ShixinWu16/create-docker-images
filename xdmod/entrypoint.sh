@@ -1,8 +1,4 @@
 #!/bin/bash
-# Bootstrap script that either sets up a fresh XDMoD test instance or upgrades
-# an existing one.  This code is only designed to work inside the XDMoD test
-# docker instances. However, since it is designed to test a real install, the
-# set of commands that are run would work on a real production system.
 function copy_template_httpd_conf {
   cp /usr/share/xdmod/templates/apache.conf /etc/httpd/conf.d/xdmod.conf
 }
@@ -19,7 +15,7 @@ pass=''
 if [ "$1" = "build" ]
 then
   BASEDIR=/root/xdmod/tests/ci
-  REPODIR=`realpath $BASEDIR/../../`
+  REPODIR=/root/xdmod
   user=root
   pass=''
   tableexist=$(mysql -u${user} -p${pass} --host mariadb -e "SHOW DATABASES LIKE 'modw'")
@@ -65,6 +61,7 @@ then
   rm -rf /var/cache/yum /var/cache/dnf
   rm -rf /root/xdmod /root/rpmbuild
   rm -f /var/run/httpd/httpd.pid
+  rm -rf /root/mariadb-rpms/*.rpm
   /usr/sbin/postfix start
   php-fpm
   /usr/sbin/httpd -DFOREGROUND
@@ -72,9 +69,11 @@ fi
 
 if [ "$1" = "testbuild" ]
 then
-  git clone -b xdmod11.0 --depth=1 https://github.com/ShixinWu16/xdmod /root/xdmod
+  if [ ! -d /root/xdmod ]; then
+    git clone --branch=file_updates_for_refactoring_docker_files --depth=1 "https://github.com/ShixinWu16/xdmod.git" /root/xdmod
+  fi
   BASEDIR=/root/xdmod/tests/ci
-  REPODIR=`realpath $BASEDIR/../../`
+  REPODIR=/root/xdmod
   REF_SOURCE=`realpath $BASEDIR/../artifacts/xdmod/referencedata`
   REF_DIR=/var/tmp/referencedata
   function set_resource_spec_end_times {
@@ -141,8 +140,9 @@ then
   php $BASEDIR/scripts/create_xdmod_users.php
   dnf clean all
   rm -rf /var/cache/yum /var/cache/dnf
-  rm -rf /root/xdmod /root/rpmbuild
+  rm -rf /root/rpmbuild
   rm -f /var/run/httpd/httpd.pid
+  rm -rf /root/mariadb-rpms/*.rpm
   /usr/sbin/postfix start
   php-fpm
   /usr/sbin/httpd -DFOREGROUND
