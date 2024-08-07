@@ -1,0 +1,61 @@
+#!/bin/bash
+
+compressimages() {
+  mkdir -p compressedimages
+  cd xdmod || exit
+  source .env
+  if grep -q '^XDMOD_BUILD=' .env; then
+    docker save "${XDMOD_BUILD}" | gzip > ../compressedimages/xdmodbuildcompressed.tar.gz
+    echo saved and compressed XDMOD build
+  fi
+  if grep -q '^XDMOD_TESTBUILD=' .env; then
+    docker save "${XDMOD_TESTBUILD}" | gzip > ../compressedimages/xdmodtestbuildcompressed.tar.gz
+    echo saved and compressed XDMOD test build
+  fi
+  cd ../xdmod-job-performance || exit
+  source .env
+  if grep -q '^SUPREMM_BUILD=' .env; then
+    docker save "${SUPREMM_BUILD}" | gzip > ../compressedimages/supremmbuildcompressed.tar.gz
+    echo saved and compressed SUPReMM build
+  fi
+  if grep -q '^SUPREMM_TESTBUILD=' .env; then
+    docker save "${SUPREMM_TESTBUILD}" | gzip > ../compressedimages/supremmtestbuildcompressed.tar.gz
+    echo saved and compressed SUPReMM test build
+  fi
+  cd ../xdmod-ondemand || exit
+  source .env
+  if grep -q '^ONDEMAND_BUILD=' .env; then
+    docker save "${ONDEMAND_BUILD}" | gzip > ../compressedimages/ondemandbuildcompressed.tar.gz
+    echo saved and compressed OnDemand build
+  fi
+  if grep -q '^ONDEMAND_TESTBUILD=' .env; then
+    docker save "${ONDEMAND_TESTBUILD}" | gzip > ../compressedimages/ondemandtestbuildcompressed.tar.gz
+    echo saved and compressed OnDemand test build
+  fi
+  echo done!
+}
+
+loadimages() {
+  cd compressedimages || exit
+  for file in xdmodbuildcompressed.tar.gz xdmodtestbuildcompressed.tar.gz supremmbuildcompressed.tar.gz supremmtestbuildcompressed.tar.gz ondemandbuildcompressed.tar.gz ondemandtestbuildcompressed.tar.gz;
+  do
+    if [ -f "$file" ]; then
+      docker load < "$file"
+    else
+      echo "File $file does not exist, skipping."
+    fi
+  done
+}
+
+case "$1" in
+  'save')
+    compressimages
+    ;;
+  'load')
+    loadimages
+    ;;
+  *)
+    echo "Usage: $0 { save | load }"
+    exit 1
+    ;;
+esac
