@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -e
 set -o pipefail
 
@@ -36,7 +35,7 @@ then
   expect xdmod-setup.tcl | col -b || true
   rm -rf xdmod-setup.tcl
   aggregate_supremm.sh
-  rm -rf /root/xdmod-supremm /root/xdmod /root/rpmbuild
+  rm -rf /root/rpmbuild
   acl-config
   /usr/sbin/postfix start
   php-fpm
