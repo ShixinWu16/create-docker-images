@@ -4,6 +4,8 @@ FROM --platform=${BASE_IMAGE_PLATFORM} ${BASE_IMAGE}
 
 LABEL description="Base image containing XDMoD required software."
 
+COPY dnf.conf /etc/dnf/dnf.conf
+
 # Install the software requirements for installing xdmod
 RUN dnf makecache && \
     dnf -y install epel-release && \
