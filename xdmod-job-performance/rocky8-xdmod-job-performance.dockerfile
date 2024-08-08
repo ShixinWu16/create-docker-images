@@ -14,42 +14,25 @@ ENV XDMOD_TEST_MODE=fresh_install
 
 COPY assets/mongodb-org-${BASE_IMAGE_ARCHITECTURE}.repo /etc/yum.repos.d
 
-RUN dnf install -y mongodb-org
-
 # RUN dnf install -y https://github.com/ubccr/xdmod-supremm/releases/download/${XDMOD_SUPREMM_GITHUB_TAG}/${XDMOD_SUPREMM_RPM}
-
-RUN dnf clean all
-RUN rm -rf /var/cache/dnf
 
 COPY assets/ /root/assets/
 COPY bin/ /root/bin
 
 WORKDIR /root
 
-## Copy XDMoD configuration files and fix defaults
-RUN sed -i 's/^#nojournal = true/nojournal = true/; s/^#noprealloc = true/noprealloc = true/' /etc/mongod.conf
-
-## Start services, setup database and ingest SUPReMM data.
-## note that we make sure to clean shutdown the database so the data are flushed properly
-
-# RUN git clone -b xdmod11.0 https://github.com/ubccr/xdmod.git
-# RUN git clone -b xdmod11.0 https://github.com/ubccr/xdmod-supremm.git
-
-RUN git clone -b dockersplit --depth=1 https://github.com/ShixinWu16/xdmod-supremm.git /root/xdmod-supremm && \
-    ln -s ~/xdmod-supremm/ ~/xdmod/open_xdmod/modules/supremm
-
-WORKDIR /root/xdmod-supremm
-
-RUN composer install
-
-WORKDIR /root/xdmod
-
-RUN composer install
-
-
-RUN /root/bin/buildrpm xdmod supremm
-
-RUN dnf install -y ~/rpmbuild/RPMS/noarch/xdmod-supremm*.rpm
+RUN dnf install -y mongodb-org && \
+    sed -i 's/^#nojournal = true/nojournal = true/; s/^#noprealloc = true/noprealloc = true/' /etc/mongod.conf && \
+    git clone -b dockersplit --depth=1 https://github.com/ShixinWu16/xdmod-supremm.git /root/xdmod-supremm && \
+    ln -s ~/xdmod-supremm/ ~/xdmod/open_xdmod/modules/supremm && \
+    cd xdmod-supremm && \
+    composer install --no-dev --working-dir=/root/xdmod-supremm && \
+    cd xdmod && \
+    composer install && \
+    /root/bin/buildrpm xdmod supremm && \
+    dnf install -y ~/rpmbuild/RPMS/noarch/xdmod-supremm*.rpm && \
+    dnf clean all && \
+    rm -rf /var/cache/dnf
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

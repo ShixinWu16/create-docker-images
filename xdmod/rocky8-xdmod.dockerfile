@@ -20,17 +20,14 @@ COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN openssl genrsa -rand /proc/cpuinfo:/proc/filesystems:/proc/interrupts:/proc/ioports:/proc/uptime 2048 > /etc/pki/tls/private/localhost.key && \
     openssl req -new -key /etc/pki/tls/private/localhost.key -x509 -sha256 -days 365 -set_serial $RANDOM -extensions v3_req -out /etc/pki/tls/certs/localhost.crt -subj "/C=XX/L=Default City/O=Default Company Ltd" && \
     rm -rf /tmp/assets/mariadb-rpms /tmp/assets/mariadb-server.cnf /tmp/assets/mysql-server.cnf && \
-    rm -rf /root/bin/imagehash /root/bin/mariadb-wait-ready
-
-RUN mkdir -p /root/rpmbuild/RPMS/noarch && \
+    rm -rf /root/bin/imagehash /root/bin/mariadb-wait-ready && \
+    mkdir -p /root/rpmbuild/RPMS/noarch && \
     git clone --branch=file_updates_for_refactoring_docker_files --depth=1 "https://github.com/ShixinWu16/xdmod.git" /root/xdmod && \
-    # git clone --branch=${XDMOD_GITHUB_TAG} --depth=1 "https://github.com/${XDMOD_GITHUB_USER}/xdmod.git" /root/xdmod && \
     cd /root/xdmod && \
     composer install && \
     /root/bin/buildrpm xdmod && \
-    cd /root
-
-RUN dnf install -y mysql && \
+    cd /root && \
+    dnf install -y mysql && \
     dnf install -y /root/rpmbuild/RPMS/*/*.rpm && \
     dnf clean all && rm -rf /var/cache/dnf
 
