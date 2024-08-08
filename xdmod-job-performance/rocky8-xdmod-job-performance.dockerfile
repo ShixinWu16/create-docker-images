@@ -25,9 +25,9 @@ RUN dnf install -y mongodb-org && \
     sed -i 's/^#nojournal = true/nojournal = true/; s/^#noprealloc = true/noprealloc = true/' /etc/mongod.conf && \
     git clone -b dockersplit --depth=1 https://github.com/ShixinWu16/xdmod-supremm.git /root/xdmod-supremm && \
     ln -s ~/xdmod-supremm/ ~/xdmod/open_xdmod/modules/supremm && \
-    cd xdmod-supremm && \
-    composer install --no-dev --working-dir=/root/xdmod-supremm && \
-    cd xdmod && \
+    cd /root/xdmod-supremm && \
+    composer install && \
+    cd /root/xdmod && \
     composer install && \
     /root/bin/buildrpm xdmod supremm && \
     dnf install -y ~/rpmbuild/RPMS/noarch/xdmod-supremm*.rpm && \
