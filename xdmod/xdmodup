@@ -26,6 +26,7 @@ starttest() {
 }
 
 # builds xdmod with just tables
+# special case: /root/xdmod and /root/rpmbuild is still in the image as this image will be used to build all other images
 build() {
     source .env
     export COMMAND="build"
