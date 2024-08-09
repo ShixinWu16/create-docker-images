@@ -14,6 +14,9 @@ buildxdmod() {
     ./xdmodbuilder xdmod
     cd xdmod
     ./xdmodup build
+    echo committing xdmod
+    docker commit xdmod ${XDMOD_IMAGE}-build
+    echo commited xdmod image
     cp .env ../.env
 }
 
@@ -85,7 +88,7 @@ testsupremm() {
 
 resetenv() {
   rm -f .env
-  wget https://raw.githubusercontent.com/ShixinWu16/create-docker-images/xdmodupdate/.env
+  wget https://raw.githubusercontent.com/ShixinWu16/create-docker-images/main/.env
 }
 
 case "$1" in

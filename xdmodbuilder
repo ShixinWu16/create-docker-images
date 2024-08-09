@@ -19,36 +19,40 @@ buildxdmod() {
 
 buildondemand() {
     rm -f xdmod-ondemand/.env
-    cp xdmod/.env xdmod-ondemand/.env
+    cp .env xdmod-ondemand/.env
     source xdmod-ondemand/.env
     export XDMOD_IMAGE=${XDMOD_BUILD}
     docker-compose build xdmod-ondemand
+    cp xdmod-ondemand/.env .env
 }
 
 buildtestondemand() {
     rm -f xdmod-ondemand/.env
-    cp xdmod/.env xdmod-ondemand/.env
+    cp .env xdmod-ondemand/.env
     source xdmod-ondemand/.env
     export XDMOD_IMAGE=${XDMOD_TESTBUILD}
     docker-compose build xdmod-ondemand
+    cp xdmod-ondemand/.env .env
 }
 
 buildsupremm() {
     rm -f xdmod-job-performance/.env
-    cp xdmod/.env xdmod-job-performance/.env
+    cp .env xdmod-job-performance/.env
     source xdmod-job-performance/.env
     export XDMOD_IMAGE=${XDMOD_BUILD}
     docker-compose build xdmod-job-performance
     docker-compose build mongodb
+    cp xdmod-job-performance/.env .env
 }
 
 buildtestsupremm() {
     rm -f xdmod-job-performance/.env
-    cp xdmod/.env xdmod-job-performance/.env
+    cp .env xdmod-job-performance/.env
     source xdmod-job-performance/.env
     export XDMOD_IMAGE=${XDMOD_TESTBUILD}
     docker-compose build xdmod-job-performance
     docker-compose build mongodb
+    cp xdmod-job-performance/.env .env
 }
 
 resetenv() {
