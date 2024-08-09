@@ -4,140 +4,15 @@ compressimages() {
   rm -rf compressedimages
   mkdir -p compressedimages || { echo "Failed to create directory 'compressedimages'"; return 1; }
 
-  cd xdmod || { echo "Failed to change directory to 'xdmod'"; return 1; }
-  source .env || { echo "Failed to source .env in 'xdmod'"; return 1; }
-
-  if grep -q '^XDMOD_BUILD=' .env; then
-    docker save "${XDMOD_BUILD}" | gzip > ../compressedimages/xdmodbuildcompressed.tar.gz
+  for image in $(docker images --format "{{.Repository}}:{{.Tag}}" | grep '^tools-int-01\.ccr\.xdmod\.org'); do
+    imagename=$(echo "$image" | tr '/' '_' | tr ':' '_')
+    docker save "$image" | gzip > "compressedimages/${imagename}.tar.gz"
     if [ $? -eq 0 ]; then
-      echo "Saved and compressed XDMoD build"
+      echo "Saved and compressed $image"
     else
-      echo "Failed to save and compress XDMoD build"
+      echo "Failed to save and compress $image"
     fi
-  fi
-
-  if grep -q '^MARIADB_BUILD=' .env; then
-    docker save "${MARIADB_BUILD}" | gzip > ../compressedimages/mariadbbuildcompressed.tar.gz
-    if [ $? -eq 0 ]; then
-      echo "Saved and compressed XDMoD MariaDB build"
-    else
-      echo "Failed to save and compress XDMoD MariaDB build"
-    fi
-  fi
-
-  if grep -q '^XDMOD_TESTBUILD=' .env; then
-    docker save "${XDMOD_TESTBUILD}" | gzip > ../compressedimages/xdmodtestbuildcompressed.tar.gz
-    if [ $? -eq 0 ]; then
-      echo "Saved and compressed XDMoD test build"
-    else
-      echo "Failed to save and compress XDMoD test build"
-    fi
-  fi
-
-  if grep -q '^MARIADB_TESTBUILD=' .env; then
-    docker save "${MARIADB_TESTBUILD}" | gzip > ../compressedimages/mariadbtestbuildcompressed.tar.gz
-    if [ $? -eq 0 ]; then
-      echo "Saved and compressed XDMoD MariaDB test build"
-    else
-      echo "Failed to save and compress XDMoD MariaDB test build"
-    fi
-  fi
-
-  cd ../xdmod-job-performance || { echo "Failed to change directory to 'xdmod-job-performance'"; return 1; }
-  source .env || { echo "Failed to source .env in 'xdmod-job-performance'"; return 1; }
-
-  if grep -q '^SUPREMM_BUILD=' .env; then
-    docker save "${SUPREMM_BUILD}" | gzip > ../compressedimages/supremmbuildcompressed.tar.gz
-    if [ $? -eq 0 ]; then
-      echo "Saved and compressed SUPReMM build"
-    else
-      echo "Failed to save and compress SUPReMM build"
-    fi
-  fi
-
-  if grep -q '^SUPREMM_MARIADB_BUILD=' .env; then
-    docker save "${SUPREMM_MARIADB_BUILD}" | gzip > ../compressedimages/supremmmariadbbuildcompressed.tar.gz
-    if [ $? -eq 0 ]; then
-      echo "Saved and compressed SUPReMM MariaDB build"
-    else
-      echo "Failed to save and compress SUPReMM MariaDB build"
-    fi
-  fi
-
-  if grep -q '^SUPREMM_MONGODB_BUILD=' .env; then
-    docker save "${SUPREMM_MONGODB_BUILD}" | gzip > ../compressedimages/supremmmongodbbuildcompressed.tar.gz
-    if [ $? -eq 0 ]; then
-      echo "Saved and compressed SUPReMM MongoDB build"
-    else
-      echo "Failed to save and compress SUPReMM MongoDB build"
-    fi
-  fi
-
-  if grep -q '^SUPREMM_TESTBUILD=' .env; then
-    docker save "${SUPREMM_TESTBUILD}" | gzip > ../compressedimages/supremmtestbuildcompressed.tar.gz
-    if [ $? -eq 0 ]; then
-      echo "Saved and compressed SUPReMM test build"
-    else
-      echo "Failed to save and compress SUPReMM test build"
-    fi
-  fi
-
-  if grep -q '^SUPREMM_MARIADB_TESTBUILD=' .env; then
-    docker save "${SUPREMM_MARIADB_TESTBUILD}" | gzip > ../compressedimages/supremmmariadbtestbuildcompressed.tar.gz
-    if [ $? -eq 0 ]; then
-      echo "Saved and compressed SUPReMM MariaDB test build"
-    else
-      echo "Failed to save and compress SUPReMM MariaDB test build"
-    fi
-  fi
-
-  if grep -q '^SUPREMM_MONGODB_TESTBUILD=' .env; then
-    docker save "${SUPREMM_MONGODB_TESTBUILD}" | gzip > ../compressedimages/supremmmongodbtestbuildcompressed.tar.gz
-    if [ $? -eq 0 ]; then
-      echo "Saved and compressed SUPReMM MongoDB test build"
-    else
-      echo "Failed to save and compress SUPReMM MongoDB test build"
-    fi
-  fi
-
-  cd ../xdmod-ondemand || { echo "Failed to change directory to 'xdmod-ondemand'"; return 1; }
-  source .env || { echo "Failed to source .env in 'xdmod-ondemand'"; return 1; }
-
-  if grep -q '^ONDEMAND_BUILD=' .env; then
-    docker save "${ONDEMAND_BUILD}" | gzip > ../compressedimages/ondemandbuildcompressed.tar.gz
-    if [ $? -eq 0 ]; then
-      echo "Saved and compressed OnDemand build"
-    else
-      echo "Failed to save and compress OnDemand build"
-    fi
-  fi
-
-  if grep -q '^ONDEMAND_MARIADB_BUILD=' .env; then
-    docker save "${ONDEMAND_MARIADB_BUILD}" | gzip > ../compressedimages/ondemandmariadbbuildcompressed.tar.gz
-    if [ $? -eq 0 ]; then
-      echo "Saved and compressed OnDemand MariaDB build"
-    else
-      echo "Failed to save and compress OnDemand MariaDB build"
-    fi
-  fi
-
-  if grep -q '^ONDEMAND_TESTBUILD=' .env; then
-    docker save "${ONDEMAND_TESTBUILD}" | gzip > ../compressedimages/ondemandtestbuildcompressed.tar.gz
-    if [ $? -eq 0 ]; then
-      echo "Saved and compressed OnDemand test build"
-    else
-      echo "Failed to save and compress OnDemand test build"
-    fi
-  fi
-
-  if grep -q '^ONDEMAND_MARIADB_TESTBUILD=' .env; then
-    docker save "${ONDEMAND_MARIADB_TESTBUILD}" | gzip > ../compressedimages/ondemandmariadbtestbuildcompressed.tar.gz
-    if [ $? -eq 0 ]; then
-      echo "Saved and compressed OnDemand MariaDB test build"
-    else
-      echo "Failed to save and compress OnDemand MariaDB test build"
-    fi
-  fi
+  done
 
   echo "Done!"
 }
@@ -146,7 +21,7 @@ compressimages() {
 loadimages() {
   cd compressedimages || { echo "Failed to change directory to 'compressedimages'"; return 1; }
 
-  for file in *buildcompressed.tar.gz; do
+  for file in *.tar.gz; do
     docker load < "$file"
     if [ $? -eq 0 ]; then
       echo "Loaded Docker image from $file"
