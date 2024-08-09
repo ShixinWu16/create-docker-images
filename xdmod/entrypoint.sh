@@ -21,7 +21,6 @@ then
   tableexist=$(mysql -u${user} -p${pass} --host mariadb -e "SHOW DATABASES LIKE 'modw'")
 
   if [[ -z "$tableexist" ]]; then
-#    dnf install -y ~/rpmbuild/RPMS/*/*.rpm
     copy_template_httpd_conf
     mysql -h mariadb -e "CREATE USER 'root'@'xdmod' IDENTIFIED BY '';
     GRANT ALL PRIVILEGES ON *.* TO 'root'@'xdmod' WITH GRANT OPTION;
@@ -54,12 +53,9 @@ then
     fi
     expect $BASEDIR/scripts/xdmod-setup-finish.tcl | col -b
   fi
-
   sudo -u xdmod xdmod-ingestor
-
   dnf clean all
   rm -rf /var/cache/yum /var/cache/dnf
-  rm -rf /root/xdmod /root/rpmbuild
   rm -f /var/run/httpd/httpd.pid
   rm -rf /root/mariadb-rpms/*.rpm
   /usr/sbin/postfix start
@@ -69,9 +65,6 @@ fi
 
 if [ "$1" = "testbuild" ]
 then
-  if [ ! -d /root/xdmod ]; then
-    git clone --branch=file_updates_for_refactoring_docker_files --depth=1 "https://github.com/ShixinWu16/xdmod.git" /root/xdmod
-  fi
   BASEDIR=/root/xdmod/tests/ci
   REPODIR=/root/xdmod
   REF_SOURCE=`realpath $BASEDIR/../artifacts/xdmod/referencedata`
