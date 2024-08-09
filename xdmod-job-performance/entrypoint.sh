@@ -4,7 +4,6 @@ set -o pipefail
 
 if [ "$1" = "build" ]
 then
-  dnf install -y ~/rpmbuild/RPMS/noarch/xdmod-supremm*.rpm
   ~/bin/importmongo.sh
   wget -nv https://raw.githubusercontent.com/ubccr/xdmod-supremm/xdmod11.0/tests/integration/scripts/mongo_auth.mongojs
   mongo mongodb://root:admin@mongodb:27017 mongo_auth.mongojs
@@ -24,7 +23,6 @@ fi
 
 if [ "$1" = "testbuild" ]
 then
-  dnf install -y ~/rpmbuild/RPMS/noarch/xdmod-supremm*.rpm
   ~/bin/importmongo.sh
   wget -nv https://raw.githubusercontent.com/ubccr/xdmod-supremm/xdmod11.0/tests/integration/scripts/mongo_auth.mongojs
   mongo mongodb://root:admin@mongodb:27017 mongo_auth.mongojs

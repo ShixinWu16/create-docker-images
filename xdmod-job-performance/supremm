@@ -51,6 +51,15 @@ build() {
     else
       echo "SUPREMM_MARIADB_BUILD=${MARIADB_IMAGE}-build-supremm" >> .env
     fi
+    echo committing mongodb
+    docker commit mongodb ${MONGODB_IMAGE}-build
+    echo commited mongodb image
+    if grep -q '^SUPREMM_MONGODB_BUILD=' .env;
+    then
+      sed -i~ '/^SUPREMM_MONGODB_BUILD=/s/=.*/=${MONGODB_IMAGE}-build/' .env
+    else
+      echo "SUPREMM_MONGODB_BUILD=${MONGODB_IMAGE}-build" >> .env
+    fi
     echo committing xdmod
     docker commit xdmod ${XDMOD_JOB_PERFORMANCE_IMAGE}-build
     echo commited xdmod image
@@ -86,6 +95,15 @@ testbuild() {
       sed -i~ '/^SUPREMM_MARIADB_TESTBUILD=/s/=.*/=${MARIADB_IMAGE}-test-supremm/' .env
     else
       echo "SUPREMM_MARIADB_TESTBUILD=${MARIADB_IMAGE}-test-supremm" >> .env
+    fi
+    echo committing mongodb
+    docker commit mongodb ${MONGODB_IMAGE}-test
+    echo commited mongodb image
+    if grep -q '^SUPREMM_MONGODB_TESTBUILD=' .env;
+    then
+      sed -i~ '/^SUPREMM_MONGODB_TESTBUILD=/s/=.*/=${MONGODB_IMAGE}-test/' .env
+    else
+      echo "SUPREMM_MONGODB_TESTBUILD=${MONGODB_IMAGE}-test" >> .env
     fi
     echo committing xdmod
     docker commit xdmod ${XDMOD_JOB_PERFORMANCE_IMAGE}-test
