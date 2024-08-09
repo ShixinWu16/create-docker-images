@@ -43,13 +43,13 @@ build() {
     done
     echo -e "\supremm is up!"
     echo committing mariadb
-    docker commit mariadb "${MARIADB_IMAGE}"-build-supremm
+    docker commit mariadb "${MARIADB_IMAGE}"-supremm
     echo commited mariadb image
     if grep -q '^SUPREMM_MARIADB_BUILD=' .env;
     then
-      sed -i~ '/^SUPREMM_MARIADB_BUILD=/s/=.*/=${MARIADB_IMAGE}-build-supremm/' .env
+      sed -i~ '/^SUPREMM_MARIADB_BUILD=/s/=.*/=${MARIADB_IMAGE}-supremm/' .env
     else
-      echo "SUPREMM_MARIADB_BUILD=${MARIADB_IMAGE}-build-supremm" >> .env
+      echo "SUPREMM_MARIADB_BUILD=${MARIADB_IMAGE}-supremm" >> .env
     fi
     echo committing mongodb
     docker commit mongodb ${MONGODB_IMAGE}-build
@@ -88,13 +88,13 @@ testbuild() {
     done
     echo -e "\nTest supremm created!"
     echo committing mariadb
-    docker commit mariadb "${MARIADB_IMAGE}"-test-supremm
+    docker commit mariadb "${MARIADB_IMAGE}"-supremm
     echo commited mariadb image
     if grep -q '^SUPREMM_MARIADB_TESTBUILD=' .env;
     then
-      sed -i~ '/^SUPREMM_MARIADB_TESTBUILD=/s/=.*/=${MARIADB_IMAGE}-test-supremm/' .env
+      sed -i~ '/^SUPREMM_MARIADB_TESTBUILD=/s/=.*/=${MARIADB_IMAGE}-supremm/' .env
     else
-      echo "SUPREMM_MARIADB_TESTBUILD=${MARIADB_IMAGE}-test-supremm" >> .env
+      echo "SUPREMM_MARIADB_TESTBUILD=${MARIADB_IMAGE}-supremm" >> .env
     fi
     echo committing mongodb
     docker commit mongodb ${MONGODB_IMAGE}-test

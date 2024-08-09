@@ -35,13 +35,13 @@ build() {
     done
     echo -e "\ondemand is up!"
     echo committing mariadb
-    docker commit mariadb "${MARIADB_IMAGE}"-build-ondemand
+    docker commit mariadb "${MARIADB_IMAGE}"-ondemand
     echo commited mariadb image
       if grep -q '^ONDEMAND_MARIADB_BUILD=' .env;
       then
-        sed -i~ '/^ONDEMAND_MARIADB_BUILD=/s/=.*/=${MARIADB_IMAGE}-build-ondemand/' .env
+        sed -i~ '/^ONDEMAND_MARIADB_BUILD=/s/=.*/=${MARIADB_IMAGE}-ondemand/' .env
       else
-        echo "ONDEMAND_MARIADB_BUILD=${MARIADB_IMAGE}-build-ondemand" >> .env
+        echo "ONDEMAND_MARIADB_BUILD=${MARIADB_IMAGE}-ondemand" >> .env
       fi
       echo committing xdmod
       docker commit xdmod ${XDMOD_ONDEMAND_IMAGE}-build-ondemand
@@ -71,13 +71,13 @@ testbuild() {
     done
     echo -e "\Test ondemand is up!"
     echo committing mariadb
-    docker commit mariadb "${MARIADB_IMAGE}"-test-ondemand
+    docker commit mariadb "${MARIADB_IMAGE}"-ondemand
     echo commited mariadb image
     if grep -q '^ONDEMAND_MARIADB_TESTBUILD=' .env;
     then
-      sed -i~ '/^ONDEMAND_MARIADB_TESTBUILD=/s/=.*/=${MARIADB_IMAGE}-test-ondemand/' .env
+      sed -i~ '/^ONDEMAND_MARIADB_TESTBUILD=/s/=.*/=${MARIADB_IMAGE}-ondemand/' .env
     else
-      echo "ONDEMAND_MARIADB_TESTBUILD=${MARIADB_IMAGE}-test-ondemand" >> .env
+      echo "ONDEMAND_MARIADB_TESTBUILD=${MARIADB_IMAGE}-ondemand" >> .env
     fi
     echo committing xdmod
     docker commit xdmod ${XDMOD_ONDEMAND_IMAGE}-test-ondemand
