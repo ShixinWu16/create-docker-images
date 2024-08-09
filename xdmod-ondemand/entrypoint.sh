@@ -19,7 +19,7 @@ then
     cp $BASEDIR/../artifacts/*.log $LOGPATH
     sudo -u xdmod xdmod-ondemand-ingestor -d $LOGPATH -r styx --debug
 
-    rm -rf /root/xdmod-ondemand /root/xdmod /var/cache/dnf /root/rpmbuild
+    rm -rf /var/cache/dnf /root/rpmbuild
     dnf clean all
 
     /usr/sbin/postfix start
