@@ -23,9 +23,7 @@ loadimages() {
 
   for file in *.tar.gz; do
     docker load < "$file"
-    if [ $? -eq 0 ]; then
-      echo "Loaded Docker image from $file"
-    else
+    if [ $? -ne 0 ]; then
       echo "Failed to load Docker image from $file"
     fi
   done
