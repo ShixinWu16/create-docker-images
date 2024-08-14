@@ -1,5 +1,8 @@
 #!/bin/bash
 
+
+# compression using gzip
+
 compressimages() {
   rm -rf compressedimages
   mkdir -p compressedimages || { echo "Failed to create directory 'compressedimages'"; return 1; }
@@ -28,6 +31,44 @@ loadimages() {
     fi
   done
 }
+
+
+# compression using zstd
+
+#compressimages() {
+#  # Check if zstd is installed
+#  if ! command -v zstd &> /dev/null; then
+#    echo "zstd is not installed. Installing zstd..."
+#    sudo apt-get update && sudo apt-get install -y zstd || { echo "Failed to install zstd"; return 1; }
+#  fi
+#
+#  rm -rf compressedimages
+#  mkdir -p compressedimages || { echo "Failed to create directory 'compressedimages'"; return 1; }
+#
+#  for image in $(docker images --format "{{.Repository}}:{{.Tag}}" | grep '^tools-int-01\.ccr\.xdmod\.org'); do
+#    imagename=$(echo "$image" | tr '/' '_' | tr ':' '_')
+#    docker save "$image" | zstd > "compressedimages/${imagename}.tar.zst"
+#    if [ $? -eq 0 ]; then
+#      echo "Saved and compressed $image"
+#    else
+#      echo "Failed to save and compress $image"
+#    fi
+#  done
+#
+#  echo "Done!"
+#}
+#
+#
+#loadimages() {
+#  cd compressedimages || { echo "Failed to change directory to 'compressedimages'"; return 1; }
+#
+#  for file in *.tar.zst; do
+#    zstd -d < "$file" | docker load
+#    if [ $? -ne 0 ]; then
+#      echo "Failed to load Docker image from $file"
+#    fi
+#  done
+#}
 
 
 case "$1" in
